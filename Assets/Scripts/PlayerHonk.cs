@@ -9,8 +9,13 @@ public class PlayerHonk : MonoBehaviour
     [Header("Recoil")]
     [SerializeField] private float boostFactor = 0.25f;
     [SerializeField] private float baseBoost = 3.25f;
-    [SerializeField] private float airBoost = 13f;
+    [SerializeField] private float airBoost = 15f;
     [SerializeField] private float recoilDuration = 0.15f;
+
+    [Header("Sound waves")]
+    [SerializeField] private GameObject soundWavePrefab;
+    [SerializeField] private float minRadius = 1f;
+    [SerializeField] private float maxRadius = 10f;
 
     private float _cooldownCounter;
     
@@ -78,8 +83,11 @@ public class PlayerHonk : MonoBehaviour
     private void FireHonk(float chargePercent)
     {
         _cooldownCounter = cooldownTime;
-        Debug.Log($"Honk: {chargePercent}%");
 
+        float radius = Mathf.Lerp(minRadius, maxRadius, chargePercent);
+        GameObject wave = Instantiate(soundWavePrefab, transform.position, Quaternion.identity);
+        wave.GetComponent<SoundWave>().Initialize(minRadius, radius);
+        
         if (_surroundingsCheck.IsGrounded())
         {
             Vector2 movementSpeed = _playerController.GetMovementSpeed();
