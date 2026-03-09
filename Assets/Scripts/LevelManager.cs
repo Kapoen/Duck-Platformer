@@ -36,6 +36,9 @@ public class LevelManager : MonoBehaviour
         _spriteManager = _player.GetComponent<PlayerSpriteManager>();
     }
 
+    /// <summary>
+    /// Resets everything in the level to its original state.
+    /// </summary>
     private void ResetLevel()
     {
         foreach (Platform platform in _platforms)
@@ -55,11 +58,18 @@ public class LevelManager : MonoBehaviour
         _player.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
     }
 
+    /// <summary>
+    /// Trigger for if the player dies.
+    /// </summary>
     public void OnPlayerDeath()
     {
         ResetLevel();
     }
     
+    /// <summary>
+    /// Updates the spawn position of the player.
+    /// </summary>
+    /// <param name="position">The new spawn position of the player.</param>
     public void SetPlayerSpawn(Transform position)
     {
         _currentSpawn = position;

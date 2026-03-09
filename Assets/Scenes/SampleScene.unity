@@ -6181,9 +6181,9 @@ GameObject:
   - component: {fileID: 1441360487}
   - component: {fileID: 1441360486}
   - component: {fileID: 1441360491}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Bee
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7179,9 +7179,9 @@ MonoBehaviour:
   cooldownTime: 0.15
   boostFactor: 0.25
   baseBoost: 3.25
-  airBoost: 15
-  recoilDuration: 0.15
-  soundWavePrefab: {fileID: 1158434012474763216, guid: 792058102c346224b8bfc4a24ec61d87, type: 3}
+  airBoost: 19.5
+  recoilDuration: 0.25
+  soundWavePrefab: {fileID: 7536085914646462803, guid: 42dc5530d91b9c04bb13f868f1cf5e4e, type: 3}
   minRadius: 1
   maxRadius: 10
 --- !u!1 &1789396223
@@ -7305,9 +7305,9 @@ GameObject:
   - component: {fileID: 1808250711}
   - component: {fileID: 1808250710}
   - component: {fileID: 1808250715}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Crab
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

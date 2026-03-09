@@ -48,6 +48,10 @@ public class Enemy : MonoBehaviour
         _turningCounter = _turningDelay;
     }
 
+    /// <summary>
+    /// If the player enters the hitbox of the enemy, let the player bounce if the player hits the enemy from above, else the player dies.
+    /// </summary>
+    /// <param name="other">The <see cref="GameObject"/> that enters the hitbox.</param>
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (!other.gameObject.CompareTag("Player"))
@@ -66,6 +70,9 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Turn the enemy around if needed and move it.
+    /// </summary>
     private void FixedUpdate()
     {
         if (!ignoreCollision && TurnAround() && _turningCounter <= 0f)
@@ -79,6 +86,9 @@ public class Enemy : MonoBehaviour
         _rb.linearVelocityX = _movingDirection * movingSpeed;
     }
     
+    /// <summary>
+    /// Reset the enemy to its original position and state.
+    /// </summary>
     public void ResetEnemy()
     {
         _movingDirection = startToLeft ? -1 : 1;
@@ -89,7 +99,11 @@ public class Enemy : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    private bool Grounded()
+    /// <summary>
+    /// Checks if there is ground in front of the enemy.
+    /// </summary>
+    /// <returns>A bool depending on if there is ground.</returns>
+    private bool IsGround()
     {
         RaycastHit2D ray = Physics2D.Raycast(
             gameObject.transform.position + _movingDirection * new Vector3(_collider.bounds.extents.x + 0.1f, 0, 0),
@@ -101,7 +115,11 @@ public class Enemy : MonoBehaviour
         return ray.collider;
     }
 
-    private bool AgainstWall()
+    /// <summary>
+    /// Checks if the enemy is against a wall.
+    /// </summary>
+    /// <returns>A bool depending on if the enemy is against a wall.</returns>
+    private bool IsAgainstWall()
     {
         RaycastHit2D ray = Physics2D.Raycast(
             gameObject.transform.position, 
@@ -113,8 +131,31 @@ public class Enemy : MonoBehaviour
         return ray.collider;
     }
 
+    /// <summary>
+    /// Checks if the enemy should turn around, so if it's against a wall
+    /// or if it's smart and there is no ground in front of it. 
+    /// </summary>
+    /// <returns>A bool depending on if the enemy should turn around.</returns>
     private bool TurnAround()
     {
-        return AgainstWall() || (smart && !Grounded());
+        return IsAgainstWall() || (smart && !IsGround());
+    }
+
+    /// <summary>
+    /// Angers the enemy, causing it to move towards the place from where the enemy is angered.
+    /// </summary>
+    /// <param name="origin">The place from where the enemy is angered.</param>
+    public void AngerEnemy(Vector2 origin)
+    {
+        if (origin.x < transform.position.x)
+        {
+            _movingDirection = -1;
+            _sprite.flipX = true;
+        }
+        else
+        {
+            _movingDirection = 1;
+            _sprite.flipX = false;
+        }
     }
 }

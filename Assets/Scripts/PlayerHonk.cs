@@ -9,8 +9,8 @@ public class PlayerHonk : MonoBehaviour
     [Header("Recoil")]
     [SerializeField] private float boostFactor = 0.25f;
     [SerializeField] private float baseBoost = 3.25f;
-    [SerializeField] private float airBoost = 15f;
-    [SerializeField] private float recoilDuration = 0.15f;
+    [SerializeField] private float airBoost = 19.5f;
+    [SerializeField] private float recoilDuration = 0.25f;
 
     [Header("Sound waves")]
     [SerializeField] private GameObject soundWavePrefab;
@@ -50,6 +50,9 @@ public class PlayerHonk : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Start charging the honk.
+    /// </summary>
     public void OnHonkStart()
     {
         if (!_surroundingsCheck.IsGrounded() && !_canAirHonk || _cooldownCounter > 0f)
@@ -61,6 +64,9 @@ public class PlayerHonk : MonoBehaviour
         _chargeTime = 0f;
     }
 
+    /// <summary>
+    /// Release and fire the honk.
+    /// </summary>
     public void OnHonkCanceled()
     {
         if (!_isCharging)
@@ -80,13 +86,17 @@ public class PlayerHonk : MonoBehaviour
         _isCharging = false;
     }
     
+    /// <summary>
+    /// Fire the soundwave and apply the recoil to the player.
+    /// </summary>
+    /// <param name="chargePercent">How far along the charge is.</param>
     private void FireHonk(float chargePercent)
     {
         _cooldownCounter = cooldownTime;
 
         float radius = Mathf.Lerp(minRadius, maxRadius, chargePercent);
         GameObject wave = Instantiate(soundWavePrefab, transform.position, Quaternion.identity);
-        wave.GetComponent<SoundWave>().Initialize(minRadius, radius);
+        wave.GetComponent<SoundWave>().Initialize(minRadius, radius, _spriteManager.FacingDirection());
         
         if (_surroundingsCheck.IsGrounded())
         {

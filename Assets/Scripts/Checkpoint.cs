@@ -13,6 +13,10 @@ public class Checkpoint : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    /// <summary>
+    /// If player enters the collider hitbox, active the checkpoint.
+    /// </summary>
+    /// <param name="other">The <see cref="GameObject"/> that enters the collider hitbox.</param>
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (_activated)

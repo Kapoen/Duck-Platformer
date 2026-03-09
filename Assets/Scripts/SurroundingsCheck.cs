@@ -32,6 +32,9 @@ public class SurroundingsCheck : MonoBehaviour
         WallDirectionCheck();
     }
 
+    /// <summary>
+    /// Check if the player is grounded.
+    /// </summary>
     private void GroundedCheck()
     {
         ContactFilter2D filter = new ContactFilter2D
@@ -58,16 +61,27 @@ public class SurroundingsCheck : MonoBehaviour
         _grounded = (hit.collider && Mathf.Abs(hit.normal.y) > 0.01f) || onPlatform;
     }
     
+    /// <summary>
+    /// Check if the player is on a wall to it's left.
+    /// </summary>
+    /// <returns>True iff the player is on a wall to it's left.</returns>
     private bool IsOnWallLeft()
     {
         return Physics2D.OverlapBox(wallCheckLeft.position, wallCheckSize, 0f, groundLayer);
     }
 
+    /// <summary>
+    /// Check if the player is on a wall to it's right.
+    /// </summary>
+    /// <returns>True iff the player is on a wall to it's right.</returns>
     private bool IsOnWallRight()
     {
         return Physics2D.OverlapBox(wallCheckRight.position, wallCheckSize, 0f, groundLayer);
     }
 
+    /// <summary>
+    /// Check if the player is on a wall, and what the direction of the wall is.
+    /// </summary>
     private void WallDirectionCheck()
     {
         if (IsOnWallLeft())
@@ -84,14 +98,31 @@ public class SurroundingsCheck : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets if the player is grounded.
+    /// </summary>
+    /// <returns>True iff the player is grounded.</returns>
     public bool IsGrounded()
     {
         return _grounded;
     }
 
+    /// <summary>
+    /// Gets the direction of the wall.
+    /// </summary>
+    /// <returns>The direction of the wall.</returns>
     public int WallDirection()
     {
         return _wallDirection;
+    }
+    
+    /// <summary>
+    /// Checks if the player is wall sliding, so on a wall and not on the ground.
+    /// </summary>
+    /// <returns>True iff the player is wall sliding.</returns>
+    public bool IsWallSliding()
+    {
+        return _wallDirection != 0 && !_grounded;
     }
     
     private void OnDrawGizmosSelected()

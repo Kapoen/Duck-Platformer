@@ -29,6 +29,10 @@ public class Platform : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
     }
 
+    /// <summary>
+    /// Checks if the player enters the hitbox from above.
+    /// </summary>
+    /// <param name="other">The <see cref="GameObject"/> that enters the hitbox.</param>
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (!other.gameObject.CompareTag("Player"))
@@ -42,6 +46,9 @@ public class Platform : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// If the platform should be falling, keep it's falling velocity lower than <see cref="maxFallSpeed"/>.
+    /// </summary>
     private void FixedUpdate()
     {
         if (_isFalling)
@@ -50,6 +57,9 @@ public class Platform : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Reset the platform to its original position and state.
+    /// </summary>
     public void ResetPlatform()
     {
         StopAllCoroutines();
@@ -62,8 +72,12 @@ public class Platform : MonoBehaviour
         _isFalling = false;
         transform.position = _startPosition;
         gameObject.SetActive(true);
+        _collider.enabled = true;
     }
     
+    /// <summary>
+    /// Handle the player landing on the platform depending on the <see cref="PlatformType"/>.
+    /// </summary>
     private void OnPlayerLanded()
     {
         switch (type)
@@ -83,6 +97,13 @@ public class Platform : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Handle the falling platform: <br />
+    /// 1. Wait for <see cref="fallDelay"/>. <br />
+    /// 2. Allow the platform to fall. <br />
+    /// 3. Disable the platform after falling for 2.5 seconds. <br />
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator HandleFallingPlatform()
     {
         yield return new WaitForSeconds(fallDelay);
@@ -95,11 +116,21 @@ public class Platform : MonoBehaviour
         gameObject.SetActive(false);
     }
     
+    /// <summary>
+    /// Allow the player to drop through the platform.
+    /// </summary>
     public void DropThrough()
     {
         StartCoroutine(HandleDropThrough());
     }
 
+    /// <summary>
+    /// Handle the player dropping through the platform: <br />
+    /// 1. Disable the collider. <br />
+    /// 2. Wait for <see cref="disableTime"/>. <br />
+    /// 3. Enable the collider again. <br />
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator HandleDropThrough()
     {
         _collider.enabled = false;

@@ -22,11 +22,19 @@ public class PlayerSpriteManager : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    /// <summary>
+    /// Gets the facing direction.
+    /// </summary>
+    /// <returns>-1 if the sprite is facing left or 1 if the sprite is facing right.</returns>
     public int FacingDirection()
     {
         return _spriteRenderer.flipX ? -1 : 1;
     }
 
+    /// <summary>
+    /// Handle the moving of the character.
+    /// </summary>
+    /// <param name="input">The movement input.</param>
     public void OnMove(Vector2 input)
     {
         _movingDirection = Math.Sign(input.x);
@@ -34,27 +42,45 @@ public class PlayerSpriteManager : MonoBehaviour
         Flip();
     }
 
+    /// <summary>
+    /// Handle player respawning.
+    /// </summary>
     public void OnRespawn()
     {
         _animator.SetTrigger(Respawn);
     }
 
+    /// <summary>
+    /// Handle player dying.
+    /// </summary>
     public void OnDeath()
     {
         _animator.SetTrigger(Death);
     }
 
+    /// <summary>
+    /// Handle player jumping.
+    /// </summary>
     public void OnJump()
     {
         _animator.SetTrigger(Jump);
     }
 
+    /// <summary>
+    /// Update the speed variables in the animator.
+    /// </summary>
+    /// <param name="movementSpeed">The player's velocity</param>
     public void UpdateSpeed(Vector2 movementSpeed)
     {
         _animator.SetFloat(Magnitude, movementSpeed.magnitude);
         _animator.SetFloat(YVelocity, movementSpeed.y);
     }
 
+    /// <summary>
+    /// Handles being on wall.
+    /// </summary>
+    /// <param name="onWall">If the player is on a wall.</param>
+    /// <param name="wallDirection">The direction of the wall.</param>
     public void OnWall(bool onWall, int wallDirection)
     {
         _animator.SetBool(Wall, onWall);
@@ -72,6 +98,9 @@ public class PlayerSpriteManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Flip the sprite, if needed.
+    /// </summary>
     public void Flip()
     {
         if (_movingDirection == 0)

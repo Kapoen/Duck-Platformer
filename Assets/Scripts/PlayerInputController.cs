@@ -14,6 +14,10 @@ public class PlayerInputController : MonoBehaviour
         _playerHonk = gameObject.GetComponent<PlayerHonk>();
     }
 
+    /// <summary>
+    /// Handles the movement input.
+    /// </summary>
+    /// <param name="context">The movement input interaction.</param>
     public void OnMove(InputAction.CallbackContext context)
     {
         Vector2 input = context.ReadValue<Vector2>();
@@ -22,6 +26,10 @@ public class PlayerInputController : MonoBehaviour
         _spriteManager.OnMove(input);
     }
     
+    /// <summary>
+    /// Handles the jump input.
+    /// </summary>
+    /// <param name="context">The jump input interaction.</param>
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.started)
@@ -39,6 +47,10 @@ public class PlayerInputController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the honk input.
+    /// </summary>
+    /// <param name="context">The honk input interaction.</param>
     public void OnHonk(InputAction.CallbackContext context)
     {
         if (context.started)

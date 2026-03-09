@@ -15,6 +15,9 @@ public class PlayerLives : MonoBehaviour
         _spriteManager = gameObject.GetComponent<PlayerSpriteManager>();
     }
 
+    /// <summary>
+    /// Handle the player dying.
+    /// </summary>
     public void Die()
     {
         _spriteManager.OnDeath();

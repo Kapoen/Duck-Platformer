@@ -12,7 +12,6 @@ public class PlayerController : MonoBehaviour
 
     [Header("Wall Movement")] 
     [SerializeField] private float wallSlideSpeed = 5f;
-    private bool _wallSliding;
     
     [Header("Jumping")] 
     [SerializeField] private float jumpForce = 15f;
@@ -20,7 +19,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float lowJumpMultiplier = 2f;
     [SerializeField] private float coyoteTime = 0.15f;
     [SerializeField] private float jumpBufferTime = 0.15f;
-    private bool _jumpHeld;
+    private bool _holdingJump;
     private float _coyoteTimeCounter;
     private float _jumpBufferCounter;
 
@@ -49,37 +48,65 @@ public class PlayerController : MonoBehaviour
         _spriteManager = gameObject.GetComponent<PlayerSpriteManager>();
     }
 
+    /// <summary>
+    /// Set the move input.
+    /// </summary>
+    /// <param name="input">The move input.</param>
     public void OnMove(Vector2 input)
     {
         _input = input;
     }
 
+    /// <summary>
+    /// Get the movement speed vector.
+    /// </summary>
+    /// <returns>The velocity vector.</returns>
     public Vector2 GetMovementSpeed()
     {
         return _rb.linearVelocity;
     }
 
-    public void SetJumpHeld(bool jumpHeld)
+    /// <summary>
+    /// Set if the jump button is currently held.
+    /// </summary>
+    /// <param name="holdingJump">If jump button is held.</param>
+    public void SetJumpHeld(bool holdingJump)
     {
-        _jumpHeld = jumpHeld;
+        _holdingJump = holdingJump;
     }
 
+    /// <summary>
+    /// Reset the jump buffer counter.
+    /// </summary>
     public void ResetJumpBufferCounter()
     {
         _jumpBufferCounter = jumpBufferTime;
     }
 
+    /// <summary>
+    /// Multiply the velocity vector.
+    /// </summary>
+    /// <param name="factor">The factor to multiply with.</param>
     public void MultiplySpeed(Vector2 factor)
     {
         _rb.linearVelocity = new Vector2(factor.x * _rb.linearVelocityX, factor.y * _rb.linearVelocityY);
     }
     
+    /// <summary>
+    /// Finish the wall jump: <br />
+    /// 1. Wait for <see cref="wallJumpImmovabilityTime"/>. <br />
+    /// 2. Set <see cref="_isWallJumping"/> to false. <br />
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator FinishWallJump()
     {
         yield return new WaitForSeconds(wallJumpImmovabilityTime);
         _isWallJumping = false;
     }
     
+    /// <summary>
+    /// Bounce the player from an enemy.
+    /// </summary>
     public void EnemyBounce()
     {
         if (_jumpBufferCounter > 0f)
@@ -93,6 +120,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// If the player enter the hitbox of a one way platform, save it in <see cref="_oneWayPlatforms"/>.
+    /// </summary>
+    /// <param name="other">The <see cref="GameObject"/> of which the player enters the <see cref="Collider2D"/>.</param>
     private void OnCollisionEnter2D(Collision2D other)
     {
         Platform platform = other.gameObject.GetComponent<Platform>();
@@ -102,6 +133,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// If the player leaves the hitbox of a one way platform, remove it from <see cref="_oneWayPlatforms"/>.
+    /// </summary>
+    /// <param name="other">The <see cref="GameObject"/> of which the player enters the <see cref="Collider2D"/>.</param>
     private void OnCollisionExit2D(Collision2D other)
     {
         Platform platform = other.gameObject.GetComponent<Platform>();
@@ -111,6 +146,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Update the timers.
+    /// </summary>
     private void UpdateTimers()
     {
         _jumpBufferCounter -= Time.deltaTime;
@@ -125,6 +163,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handle dropping through a falling platform.
+    /// </summary>
     private void HandleDropThrough()
     {
         if (_input.y < 0f && _jumpBufferCounter > 0 && _oneWayPlatforms.Count > 0)
@@ -140,6 +181,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Update the <see cref="PlayerSpriteManager"/>.
+    /// </summary>
     private void UpdateAnimator()
     {
         _spriteManager.UpdateSpeed(_rb.linearVelocity);
@@ -151,19 +195,19 @@ public class PlayerController : MonoBehaviour
         else
         {
             _spriteManager.OnWall(false, 0);
-            if (_wallSliding)
+            if (_surroundingsCheck.IsWallSliding())
             {
                 _spriteManager.Flip();
             }
         }
     }
 
+    /// <summary>
+    /// Apply movement to the player.
+    /// </summary>
     private void ApplyMovement()
     {
-        if (_isRecoiling)
-        {
-            return;
-        }
+        // TODO: Smooth movement using lerp/smoothDamp
         
         float targetSpeed = _input.x * moveSpeed;
         float currentAccel = _surroundingsCheck.IsGrounded() ? acceleration : airAcceleration;
@@ -175,21 +219,27 @@ public class PlayerController : MonoBehaviour
             _rb.AddForceX(movement);
         }
 
+        // Fall faster when falling.
         if (_rb.linearVelocityY <= 0f)
         {   
             _rb.linearVelocityY += Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
         }
-        else if (_rb.linearVelocityY > 0 && !_jumpHeld)
+        // If the player is moving up and isn't holding down jump. Make the "jump" shorter.
+        else if (_rb.linearVelocityY > 0 && !_holdingJump)
         {
             _rb.linearVelocityY += Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.fixedDeltaTime;
         }
         
+        // If the player is on the wall, limit the falling speed.
         if (_surroundingsCheck.WallDirection() != 0 && !_surroundingsCheck.IsGrounded())
         {
             _rb.linearVelocityY = Mathf.Max(_rb.linearVelocityY, -wallSlideSpeed);
         }
     }
     
+    /// <summary>
+    /// Apply the jumps to the player.
+    /// </summary>
     private void ApplyJump()
     {
         if (_jumpBufferCounter > 0f && _coyoteTimeCounter > 0f)
@@ -201,7 +251,11 @@ public class PlayerController : MonoBehaviour
             _spriteManager.OnJump();
         }
         
-        if (_jumpBufferCounter > 0f && !_surroundingsCheck.IsGrounded() && _surroundingsCheck.WallDirection() != 0 && _input.x * _surroundingsCheck.WallDirection() <= 0f)
+        // You need to move away from the wall or don't move, to be able to wall jump.
+        if (_jumpBufferCounter > 0f 
+            && !_surroundingsCheck.IsGrounded() 
+            && _surroundingsCheck.WallDirection() != 0 
+            && _input.x * _surroundingsCheck.WallDirection() <= 0f)
         {
             _spriteManager.OnJump();
             
@@ -212,15 +266,9 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(FinishWallJump());
         }
     }
-
-    private void CheckWallSliding()
-    {
-        _wallSliding = (_surroundingsCheck.WallDirection() != 0 && !_surroundingsCheck.IsGrounded());
-    }
     
     private void Update()
     {
-        CheckWallSliding();
         UpdateTimers();
         HandleDropThrough();
         UpdateAnimator();
@@ -228,16 +276,44 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Don't apply movement during the recoil
+        if (_isRecoiling)
+        {
+            if (_surroundingsCheck.WallDirection() == 0)
+            {
+                _rb.linearVelocityY = 0f;
+                return;
+            }
+
+            _isRecoiling = false;
+            StopCoroutine(nameof(RecoilRoutine));
+        }
+        
         ApplyMovement();
         ApplyJump();
     }
 
+    /// <summary>
+    /// Apply recoil to the player.
+    /// </summary>
+    /// <param name="speed">The velocity of the recoil.</param>
+    /// <param name="recoilDuration">The duration of the recoil in seconds.</param>
     public void ApplyRecoil(Vector2 speed, float recoilDuration)
     {
-        if (!_isRecoiling)
-            StartCoroutine(RecoilRoutine(speed, recoilDuration));
+        if (!_isRecoiling) { 
+            StartCoroutine(RecoilRoutine(speed, recoilDuration)); 
+        }
     }
 
+    /// <summary>
+    /// Handle the recoil: <br />
+    /// 1. Set <see cref="_isRecoiling"/> to true and set the speed to <paramref name="speed"/>.
+    /// 2. Wait for <paramref name="recoilDuration"/>.
+    /// 3. Set <see cref="_isRecoiling"/> to false.
+    /// </summary>
+    /// <param name="speed">The velocity of the recoil.</param>
+    /// <param name="recoilDuration">The duration of the recoil in seconds.</param>
+    /// <returns></returns>
     private IEnumerator RecoilRoutine(Vector2 speed, float recoilDuration)
     {
         _isRecoiling = true;
