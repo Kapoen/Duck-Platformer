@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7536085914646462803
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8214446600421882980}
+  - component: {fileID: 8696277145892912866}
+  m_Layer: 0
+  m_Name: SoundWavePrefab
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8214446600421882980
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7536085914646462803}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -10.46306, y: -2.5962, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8696277145892912866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7536085914646462803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e475d8a96156eb648a73624ef674de21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HonkWave
+  expandSpeed: 6.5
+  thickness: 0.12
+  arcAngle: 110
+  rayCount: 72
+  ringsPerHonk: 3
+  ringDelay: 0.12
+  fadeStartFraction: 0.55
+  lineMaterial: {fileID: 2100000, guid: 6660334ca86a05841bd6c43d77cd3de7, type: 2}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 1024
