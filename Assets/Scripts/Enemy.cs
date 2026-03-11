@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -8,6 +9,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private bool ignoreCollision;
     [SerializeField] private float movingSpeed = 5f;
     [SerializeField] private bool startToLeft;
+    [SerializeField] private float despawnTime = 5f;
 
     [Header("Layers")]
     [SerializeField] private LayerMask groundLayer;
@@ -18,17 +20,21 @@ public class Enemy : MonoBehaviour
     private Rigidbody2D _rb;
     private Collider2D _collider;
     private SpriteRenderer _sprite;
+    private Animator _animator;
     private Vector3 _startPosition;
     
     private int _movingDirection;
     private readonly float _turningDelay = 0.1f;
     private float _turningCounter;
 
+    private bool _active;
+
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
         _sprite = GetComponent<SpriteRenderer>();
+        _animator = GetComponent<Animator>();
         _startPosition = transform.position;
 
         if (flying)
@@ -46,6 +52,35 @@ public class Enemy : MonoBehaviour
         _sprite.flipX = startToLeft;
 
         _turningCounter = _turningDelay;
+
+        _animator.enabled = false;
+    }
+
+    /// <summary>
+    /// Activate the enemy when it is on screen.
+    /// </summary>
+    private void OnBecameVisible()
+    {
+        _active = true;
+        _animator.enabled = false;
+        
+        StopAllCoroutines();
+    }
+
+    /// <summary>
+    /// When enemy is off-screen for <see cref="despawnTime"/>, reset it.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator OnBecameInvisible()
+    {
+        if (!Application.isPlaying)
+        {
+            yield break;
+        }
+        
+        yield return new WaitForSeconds(despawnTime);
+        
+        ResetEnemy();
     }
 
     /// <summary>
@@ -75,6 +110,11 @@ public class Enemy : MonoBehaviour
     /// </summary>
     private void FixedUpdate()
     {
+        if (!_active)
+        {
+            return;
+        }
+        
         if (!ignoreCollision && TurnAround() && _turningCounter <= 0f)
         {
             _movingDirection *= -1;
@@ -95,6 +135,11 @@ public class Enemy : MonoBehaviour
         _sprite.flipX = startToLeft;
         
         transform.position = _startPosition;
+
+        _active = _sprite.isVisible;
+        _animator.enabled = _sprite.isVisible;
+        
+        StopAllCoroutines();
         
         gameObject.SetActive(true);
     }
@@ -157,5 +202,7 @@ public class Enemy : MonoBehaviour
             _movingDirection = 1;
             _sprite.flipX = false;
         }
+
+        _active = true;
     }
 }
