@@ -70,14 +70,22 @@ public class Enemy : MonoBehaviour
     /// <summary>
     /// When enemy is off-screen for <see cref="despawnTime"/>, reset it.
     /// </summary>
-    /// <returns></returns>
-    private IEnumerator OnBecameInvisible()
+    private void OnBecameInvisible()
     {
         if (!Application.isPlaying)
         {
-            yield break;
+            return;
         }
-        
+
+        StartCoroutine(Despawn());
+    }
+
+    /// <summary>
+    /// Actually despawn the enemy.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator Despawn()
+    {
         yield return new WaitForSeconds(despawnTime);
         
         ResetEnemy();

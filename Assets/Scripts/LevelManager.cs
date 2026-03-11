@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
@@ -25,10 +26,11 @@ public class LevelManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        _currentSpawn = playerSpawn;
         
         _player = GameObject.FindGameObjectWithTag("Player");
+        
+        _currentSpawn = playerSpawn;
+        _player.transform.position = playerSpawn.position;
         
         _platforms.AddRange(FindObjectsByType<Platform>(FindObjectsInactive.Include, FindObjectsSortMode.None));
         _enemies.AddRange(FindObjectsByType<Enemy>(FindObjectsInactive.Include, FindObjectsSortMode.None));
@@ -73,5 +75,14 @@ public class LevelManager : MonoBehaviour
     public void SetPlayerSpawn(Transform position)
     {
         _currentSpawn = position;
+    }
+
+    /// <summary>
+    /// Completes the level and saves it.
+    /// </summary>
+    public void LevelComplete()
+    {
+        SaveManager.Instance.CompleteLevel(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene("LevelSelect");
     }
 }
