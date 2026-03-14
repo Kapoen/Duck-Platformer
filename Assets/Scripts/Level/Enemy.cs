@@ -7,6 +7,7 @@ namespace Level
     public class Enemy : MonoBehaviour
     {
         [Header("Enemy")]
+        [SerializeField] private bool staticTillAngered;
         [SerializeField] private bool smart;
         [SerializeField] private bool flying;
         [SerializeField] private bool ignoreCollision;
@@ -68,7 +69,7 @@ namespace Level
         private void OnBecameVisible()
         {
             _active = true;
-            _animator.enabled = true;
+            _animator.enabled = !staticTillAngered;
         
             StopAllCoroutines();
         }
@@ -124,7 +125,7 @@ namespace Level
         /// </summary>
         private void FixedUpdate()
         {
-            if (!_active)
+            if (!_active || (staticTillAngered && !_angered))
             {
                 return;
             }
@@ -152,6 +153,10 @@ namespace Level
         /// </summary>
         public void ResetEnemy()
         {
+            gameObject.SetActive(false);
+            
+            _angered = false;
+            
             _movingDirection = startToLeft ? -1 : 1;
             _sprite.flipX = startToLeft;
         
@@ -159,9 +164,7 @@ namespace Level
 
             _active = _sprite.isVisible;
             _animator.enabled = _sprite.isVisible;
-
-            _angered = false;
-        
+            
             StopAllCoroutines();
         
             gameObject.SetActive(true);
@@ -214,7 +217,7 @@ namespace Level
         private bool IsAgainstWall()
         {
             RaycastHit2D ray = Physics2D.Raycast(
-                gameObject.transform.position - new Vector3(0, _collider.bounds.extents.y, 0), 
+                gameObject.transform.position - new Vector3(0, _collider.bounds.extents.y - 0.1f, 0), 
                 _movingDirection * Vector2.right, 
                 _collider.bounds.extents.x + 0.1f, 
                 groundLayer | enemyCollisionLayer | objectLayer
@@ -232,7 +235,7 @@ namespace Level
         private bool TurnAround()
         {
             bool turnOnGround = !flying && smart && !_angered;
-            return IsAgainstWall() || (turnOnGround && !IsGround());
+            return (IsGround() && IsAgainstWall()) || (turnOnGround && !IsGround());
         }
 
         /// <summary>
@@ -252,6 +255,8 @@ namespace Level
                 _sprite.flipX = false;
             }
 
+            _animator.enabled = true;
+            
             _active = true;
             _angered = true;
         }

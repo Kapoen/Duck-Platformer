@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 3630328875079531662}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.1738, y: 0.962, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44,5 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc97a2a6dc2275f4e8b5760d035dd801, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelManager
-  playerSpawn: {fileID: 8417497571019961328, guid: 7f724bd49d834954897e9c8f3d1adbc7, type: 3}
+  playerSpawn: {fileID: 0}
   killPlaneY: -10

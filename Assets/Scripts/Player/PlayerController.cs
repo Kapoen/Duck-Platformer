@@ -260,11 +260,9 @@ namespace Player
                 _spriteManager.OnJump();
             }
         
-            // You need to move away from the wall or don't move, to be able to wall jump.
             if (_jumpBufferCounter > 0f 
                 && !_surroundingsCheck.IsGrounded() 
-                && _surroundingsCheck.WallDirection() != 0 
-                && _input.x * _surroundingsCheck.WallDirection() <= 0f)
+                && _surroundingsCheck.WallDirection() != 0)
             {
                 _spriteManager.OnJump();
             
