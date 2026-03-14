@@ -40,8 +40,6 @@ namespace Player
         public void OnMove(Vector2 input)
         {
             _movingDirection = Math.Sign(input.x);
-
-            Flip();
         }
 
         /// <summary>
@@ -111,6 +109,11 @@ namespace Player
             }
         
             _spriteRenderer.flipX = (_movingDirection == -1);
+        }
+
+        private void Update()
+        {
+            Flip();
         }
     }
 }

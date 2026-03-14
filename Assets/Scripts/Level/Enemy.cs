@@ -68,7 +68,7 @@ namespace Level
         private void OnBecameVisible()
         {
             _active = true;
-            _animator.enabled = false;
+            _animator.enabled = true;
         
             StopAllCoroutines();
         }
@@ -94,7 +94,7 @@ namespace Level
         {
             yield return new WaitForSeconds(despawnTime);
         
-            ResetEnemy();
+            StartCoroutine(RespawnEnemy());
         }
 
         /// <summary>
@@ -165,6 +165,30 @@ namespace Level
             StopAllCoroutines();
         
             gameObject.SetActive(true);
+        }
+        
+        /// <summary>
+        /// Wait until the enemy spawn is off-screen, before spawning it back.
+        /// </summary>
+        private IEnumerator RespawnEnemy()
+        {
+            while (isOnScreen())
+            {
+                yield return new WaitForEndOfFrame();
+            }
+            
+            ResetEnemy();
+        }
+
+        private bool isOnScreen()
+        {
+            if (Camera.main)
+            {
+                Vector3 viewportPoint = Camera.main.WorldToViewportPoint(_startPosition);
+                return viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1;
+            }
+
+            return false;
         }
 
         /// <summary>

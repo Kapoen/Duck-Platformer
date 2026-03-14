@@ -48,6 +48,8 @@ namespace Level
             }
 
             _collider.enabled = true;
+            // Trigger an update on the collider.
+            _collider.compositeOperation = Collider2D.CompositeOperation.Merge;
         }
     }
 }
