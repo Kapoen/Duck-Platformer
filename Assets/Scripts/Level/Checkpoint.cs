@@ -32,7 +32,7 @@ namespace Level
             if (other.CompareTag("Player"))
             {
                 _levelManager.CheckpointActivated(gameObject.transform, checkpointNumber);
-                _spriteRenderer.color = Color.softYellow;
+                _spriteRenderer.color = Color.darkGoldenRod;
                 _activated = true;
             }
         }

@@ -214,7 +214,7 @@ namespace Level
         private bool IsAgainstWall()
         {
             RaycastHit2D ray = Physics2D.Raycast(
-                gameObject.transform.position, 
+                gameObject.transform.position - new Vector3(0, _collider.bounds.extents.y, 0), 
                 _movingDirection * Vector2.right, 
                 _collider.bounds.extents.x + 0.1f, 
                 groundLayer | enemyCollisionLayer | objectLayer
