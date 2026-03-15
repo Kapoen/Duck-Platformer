@@ -292,6 +292,9 @@ namespace Player
                     return;
                 }
 
+                // Cancel the recoil when a wall is hit.
+                _rb.linearVelocity = Vector2.zero;
+                
                 _isRecoiling = false;
                 StopCoroutine(nameof(RecoilRoutine));
             }

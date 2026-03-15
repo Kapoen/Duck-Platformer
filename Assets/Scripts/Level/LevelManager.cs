@@ -1,5 +1,6 @@
 using Player;
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -11,7 +12,8 @@ namespace Level
         public static LevelManager Instance;
 
         private PlayerSpriteManager _spriteManager;
-    
+
+        [SerializeField] private CinemachineCamera cineCamera;
         [SerializeField] private Transform playerSpawn;
         [SerializeField] private float killPlaneY;
         private Transform _currentSpawn;
@@ -75,6 +77,8 @@ namespace Level
 
             // TODO: Add cooldown for respawning
             _spriteManager.OnRespawn();
+            
+            cineCamera.Follow = _player.transform;
         
             _player.transform.position = _currentSpawn.position;
             _player.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;

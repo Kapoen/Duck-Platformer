@@ -33,6 +33,7 @@ namespace UI
             else
             {
                 buttonImage.color = lockedColor;
+                gameObject.GetComponent<Button>().interactable = false;
             }
         }
     }

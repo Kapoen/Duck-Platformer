@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Player
@@ -8,6 +9,8 @@ namespace Player
         private PlayerController _playerController;
         private PlayerSpriteManager _spriteManager;
         private PlayerHonk _playerHonk;
+
+        private Vector2 _lastMovementInput;
     
         public void Start()
         {
@@ -23,6 +26,7 @@ namespace Player
         public void OnMove(InputAction.CallbackContext context)
         {
             Vector2 input = context.ReadValue<Vector2>();
+            _lastMovementInput = input;
         
             _playerController.OnMove(input);
             _spriteManager.OnMove(input);
@@ -64,6 +68,14 @@ namespace Player
             {
                 _playerHonk.OnHonkCanceled();
             }
+        }
+
+        /// <summary>
+        /// Constantly update the sprite manager.
+        /// </summary>
+        private void Update()
+        {
+            _spriteManager.OnMove(_lastMovementInput);
         }
     }
 }
