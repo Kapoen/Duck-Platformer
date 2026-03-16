@@ -10,7 +10,7 @@ namespace Player
 
         [Header("Recoil")]
         [SerializeField] private float boostFactor = 0.25f;
-        [SerializeField] private float baseBoost = 1.5f;
+        [SerializeField] private float baseBoost = 1.5gf;
         [SerializeField] private float airBoost = 19.5f;
         [SerializeField] private float recoilDuration = 0.25f;
 
