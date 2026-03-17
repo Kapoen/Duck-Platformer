@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
-
-namespace TMPro
+﻿namespace TMPro
 {
+    using System;
+    using System.Collections;
+    using UnityEngine;
+
     /// <summary>
     /// Example of a Custom Character Input Validator to only allow phone number in the (800) 555-1212 format.
     /// </summary>
@@ -15,7 +15,7 @@ namespace TMPro
         public override char Validate(ref string text, ref int pos, char ch)
         {
             Debug.Log("Trying to validate...");
-            
+
             // Return unless the character is a valid digit
             if (ch < '0' && ch > '9') return (char)0;
 

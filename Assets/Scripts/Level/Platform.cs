@@ -1,49 +1,212 @@
-using System;
-using System.Collections;
-using UnityEngine;
+namespace Level
+{
+    using System;
+    using System.Collections;
+    using UnityEngine;
 
-namespace Level {
+    /// <summary>
+    /// The type of platform.
+    /// </summary>
     public enum PlatformType
     {
+        /// <summary>
+        /// A static platform.
+        /// </summary>
         Static,
+
+        /// <summary>
+        /// A one way platform, you can fall through it.
+        /// </summary>
         OneWay,
+
+        /// <summary>
+        /// A falling platform, it falls upon player landing.
+        /// </summary>
         Falling,
-        Moving
+
+        /// <summary>
+        /// A moving platform, it moves between two points.
+        /// </summary>
+        Moving,
     }
+
+    /// <summary>
+    /// Handles the platform logic.
+    /// </summary>
     public class Platform : MonoBehaviour
     {
-        [SerializeField] public PlatformType type = PlatformType.Static;
         private Vector3 _startPosition;
         private Collider2D _collider;
 
         [Header("General")]
-        [SerializeField] private bool leverActivated;
-    
-        [Header("One Way Platforms")] 
-        [SerializeField] private float disableTime = 0.25f;
-    
+        [SerializeField]
+        private PlatformType type = PlatformType.Static;
+        [SerializeField]
+        private bool leverActivated;
+
+        [Header("One Way Platforms")]
+        [SerializeField]
+        private float disableTime = 0.25f;
+
         [Header("Falling Platforms")]
-        [SerializeField] private float fallDelay = 1f;
-        [SerializeField] private float maxFallSpeed= 12.5f;
+        [SerializeField]
+        private float fallDelay = 1f;
+        [SerializeField]
+        private float maxFallSpeed = 12.5f;
         private bool _isFalling;
         private Rigidbody2D _rb;
 
         [Header("Moving Platforms")]
-        [SerializeField] private Transform pointA;
-        [SerializeField] private Transform pointB;
-        [SerializeField] private float moveSpeed = 2f;
+        [SerializeField]
+        private Transform pointA;
+        [SerializeField]
+        private Transform pointB;
+        [SerializeField]
+        private float moveSpeed = 2f;
         private Vector3 _nextPosition;
         private bool _isMoving;
 
+        /// <summary>
+        /// Gets the type of the platform.
+        /// </summary>
+        public PlatformType Type
+        {
+            get { return this.type; }
+        }
+
+        /// <summary>
+        /// Reset the platform to its original position and state.
+        /// </summary>
+        public void ResetPlatform()
+        {
+            this.StopAllCoroutines();
+
+            if (this._rb)
+            {
+                this._rb.bodyType = RigidbodyType2D.Static;
+            }
+
+            this._isFalling = false;
+            this.transform.position = this._startPosition;
+            this.gameObject.SetActive(true);
+            this._collider.enabled = true;
+
+            this._isMoving = false;
+        }
+
+        /// <summary>
+        /// Let the platform fall.
+        /// </summary>
+        public void StartFalling()
+        {
+            if (this._isFalling)
+            {
+                return;
+            }
+
+            this.StartCoroutine(this.HandleFallingPlatform());
+        }
+
+        /// <summary>
+        /// Allow the player to drop through the platform.
+        /// </summary>
+        public void DropThrough()
+        {
+            this.StartCoroutine(this.HandleDropThrough());
+        }
+
+        /// <summary>
+        /// Start or stop the moving platform.
+        /// </summary>
+        public void SwitchMoving()
+        {
+            this._isMoving = !this._isMoving;
+        }
+
+        /// <summary>
+        /// Handle the player landing on the platform depending on the <see cref="PlatformType"/>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">Throws if unknown platform type.</exception>
+        private void OnPlayerLanded()
+        {
+            if (this.leverActivated)
+            {
+                return;
+            }
+
+            switch (this.type)
+            {
+                case PlatformType.Falling:
+                    this.StartFalling();
+                    break;
+                case PlatformType.Static:
+                case PlatformType.OneWay:
+                case PlatformType.Moving:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        /// <summary>
+        /// Handle the falling platform: <br />
+        /// 1. Wait for <see cref="fallDelay"/>. <br />
+        /// 2. Allow the platform to fall. <br />
+        /// 3. Disable the platform after falling for 2.5 seconds. <br />
+        /// </summary>
+        /// <returns>...</returns>
+        private IEnumerator HandleFallingPlatform()
+        {
+            yield return new WaitForSeconds(this.fallDelay);
+
+            this._rb.bodyType = RigidbodyType2D.Dynamic;
+            this._rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            this._isFalling = true;
+
+            yield return new WaitForSeconds(2.5f);
+            this.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// Handle the player dropping through the platform: <br />
+        /// 1. Disable the collider. <br />
+        /// 2. Wait for <see cref="disableTime"/>. <br />
+        /// 3. Enable the collider again. <br />
+        /// </summary>
+        /// <returns>...</returns>
+        private IEnumerator HandleDropThrough()
+        {
+            this._collider.enabled = false;
+
+            yield return new WaitForSeconds(this.disableTime);
+
+            this._collider.enabled = true;
+        }
+
+        private void Update()
+        {
+            if (this.type != PlatformType.Moving || !this._isMoving)
+            {
+                return;
+            }
+
+            this.transform.position = Vector3.MoveTowards(this.transform.position, this._nextPosition, this.moveSpeed * Time.deltaTime);
+
+            if (this.transform.position == this._nextPosition)
+            {
+                this._nextPosition = (this._nextPosition == this.pointA.position) ? this.pointB.position : this.pointA.position;
+            }
+        }
+
         private void Awake()
         {
-            _startPosition = transform.position;
-            _collider = GetComponent<Collider2D>();
-            _rb = GetComponent<Rigidbody2D>();
+            this._startPosition = this.transform.position;
+            this._collider = this.GetComponent<Collider2D>();
+            this._rb = this.GetComponent<Rigidbody2D>();
 
-            if (type == PlatformType.Moving)
+            if (this.type == PlatformType.Moving)
             {
-                _nextPosition = pointB.position;
+                this._nextPosition = this.pointB.position;
             }
         }
 
@@ -58,11 +221,11 @@ namespace Level {
                 return;
             }
 
-            other.gameObject.transform.parent = transform;
-            
+            other.gameObject.transform.parent = this.transform;
+
             if (other.GetContact(0).normal.y < -0.5f)
             {
-                OnPlayerLanded();
+                this.OnPlayerLanded();
             }
         }
 
@@ -81,134 +244,10 @@ namespace Level {
         /// </summary>
         private void FixedUpdate()
         {
-            if (_isFalling)
+            if (this._isFalling)
             {
-                _rb.linearVelocityY = Mathf.Max(_rb.linearVelocityY, -maxFallSpeed);
+                this._rb.linearVelocityY = Mathf.Max(this._rb.linearVelocityY, -this.maxFallSpeed);
             }
-        }
-
-        /// <summary>
-        /// Reset the platform to its original position and state.
-        /// </summary>
-        public void ResetPlatform()
-        {
-            StopAllCoroutines();
-        
-            if (_rb)
-            {
-                _rb.bodyType = RigidbodyType2D.Static;
-            }
-
-            _isFalling = false;
-            transform.position = _startPosition;
-            gameObject.SetActive(true);
-            _collider.enabled = true;
-
-            _isMoving = false;
-        }
-    
-        /// <summary>
-        /// Handle the player landing on the platform depending on the <see cref="PlatformType"/>.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">Throws if unknown platform type.</exception>
-        private void OnPlayerLanded()
-        {
-            if (leverActivated)
-            {
-                return;
-            }
-            
-            switch (type)
-            {
-                case PlatformType.Falling:
-                    StartFalling();
-                    break;
-                case PlatformType.Static:
-                case PlatformType.OneWay:
-                case PlatformType.Moving:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        /// <summary>
-        /// Let the platform fall.
-        /// </summary>
-        public void StartFalling()
-        {
-            if (_isFalling)
-            {
-                return;
-            }
-                
-            StartCoroutine(HandleFallingPlatform());
-        }
-    
-        /// <summary>
-        /// Handle the falling platform: <br />
-        /// 1. Wait for <see cref="fallDelay"/>. <br />
-        /// 2. Allow the platform to fall. <br />
-        /// 3. Disable the platform after falling for 2.5 seconds. <br />
-        /// </summary>
-        /// <returns></returns>
-        private IEnumerator HandleFallingPlatform()
-        {
-            yield return new WaitForSeconds(fallDelay);
-        
-            _rb.bodyType = RigidbodyType2D.Dynamic;
-            _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-            _isFalling = true;
-
-            yield return new WaitForSeconds(2.5f);
-            gameObject.SetActive(false);
-        }
-    
-        /// <summary>
-        /// Allow the player to drop through the platform.
-        /// </summary>
-        public void DropThrough()
-        {
-            StartCoroutine(HandleDropThrough());
-        }
-
-        /// <summary>
-        /// Handle the player dropping through the platform: <br />
-        /// 1. Disable the collider. <br />
-        /// 2. Wait for <see cref="disableTime"/>. <br />
-        /// 3. Enable the collider again. <br />
-        /// </summary>
-        /// <returns></returns>
-        private IEnumerator HandleDropThrough()
-        {
-            _collider.enabled = false;
-        
-            yield return new WaitForSeconds(disableTime);
-
-            _collider.enabled = true;
-        }
-
-        private void Update()
-        {
-            if (type != PlatformType.Moving || !_isMoving)
-            {
-                return;
-            }
-            
-            transform.position = Vector3.MoveTowards(transform.position, _nextPosition, moveSpeed * Time.deltaTime);
-
-            if (transform.position == _nextPosition)
-            {
-                _nextPosition = (_nextPosition == pointA.position) ? pointB.position : pointA.position;
-            }
-        }
-
-        /// <summary>
-        /// Start or stop the moving platform.
-        /// </summary>
-        public void SwitchMoving()
-        {
-            _isMoving = !_isMoving;
         }
     }
 }

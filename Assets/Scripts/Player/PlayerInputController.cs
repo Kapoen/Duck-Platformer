@@ -1,9 +1,11 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.InputSystem;
-
-namespace Player
+﻿namespace Player
 {
+    using UnityEngine;
+    using UnityEngine.InputSystem;
+
+    /// <summary>
+    /// Handles the player input.
+    /// </summary>
     public class PlayerInputController : MonoBehaviour
     {
         private PlayerController _playerController;
@@ -11,13 +13,6 @@ namespace Player
         private PlayerHonk _playerHonk;
 
         private Vector2 _lastMovementInput;
-    
-        public void Start()
-        {
-            _playerController = gameObject.GetComponent<PlayerController>();
-            _spriteManager = gameObject.GetComponent<PlayerSpriteManager>();
-            _playerHonk = gameObject.GetComponent<PlayerHonk>();
-        }
 
         /// <summary>
         /// Handles the movement input.
@@ -26,12 +21,12 @@ namespace Player
         public void OnMove(InputAction.CallbackContext context)
         {
             Vector2 input = context.ReadValue<Vector2>();
-            _lastMovementInput = input;
-        
-            _playerController.OnMove(input);
-            _spriteManager.OnMove(input);
+            this._lastMovementInput = input;
+
+            this._playerController.OnMove(input);
+            this._spriteManager.OnMove(input);
         }
-    
+
         /// <summary>
         /// Handles the jump input.
         /// </summary>
@@ -40,16 +35,16 @@ namespace Player
         {
             if (context.started)
             {
-                _playerController.SetJumpHeld(true);
+                this._playerController.SetJumpHeld(true);
             }
             else if (context.performed)
             {
-                _playerController.ResetJumpBufferCounter();
+                this._playerController.ResetJumpBufferCounter();
             }
             else if (context.canceled)
             {
-                _playerController.MultiplySpeed(new Vector2(1f, 0.5f));
-                _playerController.SetJumpHeld(false);
+                this._playerController.MultiplySpeed(new Vector2(1f, 0.5f));
+                this._playerController.SetJumpHeld(false);
             }
         }
 
@@ -61,13 +56,20 @@ namespace Player
         {
             if (context.started)
             {
-                _playerHonk.OnHonkStart();
+                this._playerHonk.OnHonkStart();
             }
 
             if (context.canceled)
             {
-                _playerHonk.OnHonkCanceled();
+                this._playerHonk.OnHonkCanceled();
             }
+        }
+
+        private void Start()
+        {
+            this._playerController = this.gameObject.GetComponent<PlayerController>();
+            this._spriteManager = this.gameObject.GetComponent<PlayerSpriteManager>();
+            this._playerHonk = this.gameObject.GetComponent<PlayerHonk>();
         }
 
         /// <summary>
@@ -75,7 +77,7 @@ namespace Player
         /// </summary>
         private void Update()
         {
-            _spriteManager.OnMove(_lastMovementInput);
+            this._spriteManager.OnMove(this._lastMovementInput);
         }
     }
 }

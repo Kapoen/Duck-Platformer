@@ -1,8 +1,11 @@
-using System;
-using UnityEngine;
-
 namespace Player
 {
+    using System;
+    using UnityEngine;
+
+    /// <summary>
+    /// Handles the sprite and animator of the player.
+    /// </summary>
     public class PlayerSpriteManager : MonoBehaviour
     {
         private static readonly int Respawn = Animator.StringToHash("Respawn");
@@ -17,12 +20,6 @@ namespace Player
 
         private int _movingDirection = 1;
         private float _maxFallSpeed;
-    
-        private void Awake()
-        {
-            _animator = GetComponent<Animator>();
-            _spriteRenderer = GetComponent<SpriteRenderer>();
-        }
 
         /// <summary>
         /// Gets the facing direction.
@@ -30,7 +27,7 @@ namespace Player
         /// <returns>-1 if the sprite is facing left or 1 if the sprite is facing right.</returns>
         public int FacingDirection()
         {
-            return _spriteRenderer.flipX ? -1 : 1;
+            return this._spriteRenderer.flipX ? -1 : 1;
         }
 
         /// <summary>
@@ -39,7 +36,7 @@ namespace Player
         /// <param name="input">The movement input.</param>
         public void OnMove(Vector2 input)
         {
-            _movingDirection = Math.Sign(input.x);
+            this._movingDirection = Math.Sign(input.x);
         }
 
         /// <summary>
@@ -47,7 +44,7 @@ namespace Player
         /// </summary>
         public void OnRespawn()
         {
-            _animator.SetTrigger(Respawn);
+            this._animator.SetTrigger(Respawn);
         }
 
         /// <summary>
@@ -55,7 +52,7 @@ namespace Player
         /// </summary>
         public void OnDeath()
         {
-            _animator.SetTrigger(Death);
+            this._animator.SetTrigger(Death);
         }
 
         /// <summary>
@@ -63,7 +60,7 @@ namespace Player
         /// </summary>
         public void OnJump()
         {
-            _animator.SetTrigger(Jump);
+            this._animator.SetTrigger(Jump);
         }
 
         /// <summary>
@@ -72,8 +69,8 @@ namespace Player
         /// <param name="movementSpeed">The player's velocity</param>
         public void UpdateSpeed(Vector2 movementSpeed)
         {
-            _animator.SetFloat(XVelocity, Mathf.Abs(movementSpeed.x));
-            _animator.SetFloat(YVelocity, movementSpeed.y);
+            this._animator.SetFloat(XVelocity, Mathf.Abs(movementSpeed.x));
+            this._animator.SetFloat(YVelocity, movementSpeed.y);
         }
 
         /// <summary>
@@ -83,17 +80,17 @@ namespace Player
         /// <param name="wallDirection">The direction of the wall.</param>
         public void OnWall(bool onWall, int wallDirection)
         {
-            _animator.SetBool(Wall, onWall);
-        
+            this._animator.SetBool(Wall, onWall);
+
             switch (wallDirection)
             {
                 case 1:
-                    _spriteRenderer.flipX = true;
-                    _movingDirection = -1;
+                    this._spriteRenderer.flipX = true;
+                    this._movingDirection = -1;
                     break;
                 case -1:
-                    _spriteRenderer.flipX = false;
-                    _movingDirection = 1;
+                    this._spriteRenderer.flipX = false;
+                    this._movingDirection = 1;
                     break;
             }
         }
@@ -103,17 +100,26 @@ namespace Player
         /// </summary>
         public void Flip()
         {
-            if (_movingDirection == 0)
+            if (this._movingDirection == 0)
             {
                 return;
             }
-        
-            _spriteRenderer.flipX = (_movingDirection == -1);
+
+            this._spriteRenderer.flipX = this._movingDirection == -1;
         }
 
+        private void Awake()
+        {
+            this._animator = this.GetComponent<Animator>();
+            this._spriteRenderer = this.GetComponent<SpriteRenderer>();
+        }
+
+        /// <summary>
+        /// Always check if the sprite needs to be flipped.
+        /// </summary>
         private void Update()
         {
-            Flip();
+            this.Flip();
         }
     }
 }

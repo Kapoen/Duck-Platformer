@@ -1,8 +1,11 @@
-using UnityEngine;
-using UnityEngine.SceneManagement;
-
 namespace UI
 {
+    using UnityEngine;
+    using UnityEngine.SceneManagement;
+
+    /// <summary>
+    /// Handles loading a new scene.
+    /// </summary>
     public class SceneLoader : MonoBehaviour
     {
         /// <summary>

@@ -1,14 +1,17 @@
-using UnityEngine;
-
 namespace Level
 {
+    using UnityEngine;
+
+    /// <summary>
+    /// Handle the logic for the finish.
+    /// </summary>
     public class Finish : MonoBehaviour
     {
         private LevelManager _levelManager;
-    
+
         private void Start()
         {
-            _levelManager = LevelManager.Instance;
+            this._levelManager = LevelManager.Instance;
         }
 
         /// <summary>
@@ -19,7 +22,7 @@ namespace Level
         {
             if (other.CompareTag("Player"))
             {
-                _levelManager.LevelComplete();
+                this._levelManager.LevelComplete();
             }
         }
     }

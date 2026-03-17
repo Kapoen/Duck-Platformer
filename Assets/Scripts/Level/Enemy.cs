@@ -1,66 +1,128 @@
-using Player;
-using System.Collections;
-using UnityEngine;
-
 namespace Level
 {
+    using System.Collections;
+    using Player;
+    using UnityEngine;
+
+    /// <summary>
+    /// Handle the logic for an enemy
+    /// </summary>
     public class Enemy : MonoBehaviour
     {
+        private const float TurningDelay = 0.1f;
+
         [Header("Enemy")]
-        [SerializeField] private bool staticTillAngered;
-        [SerializeField] private bool smart;
-        [SerializeField] private bool flying;
-        [SerializeField] private bool ignoreCollision;
-        [SerializeField] private float movingSpeed = 5f;
-        [SerializeField] private bool startToLeft;
-        [SerializeField] private float despawnTime = 5f;
+        [SerializeField]
+        private bool staticTillAngered;
+        [SerializeField]
+        private bool smart;
+        [SerializeField]
+        private bool flying;
+        [SerializeField]
+        private bool ignoreCollision;
+        [SerializeField]
+        private float movingSpeed = 5f;
+        [SerializeField]
+        private bool startToLeft;
+        [SerializeField]
+        private float despawnTime = 5f;
 
         [Header("Layers")]
-        [SerializeField] private LayerMask groundLayer;
-        [SerializeField] private LayerMask platformLayer;
-        [SerializeField] private LayerMask enemyCollisionLayer;
-        [SerializeField] private LayerMask objectLayer;
-        [SerializeField] private LayerMask playerLayer;
+        [SerializeField]
+        private LayerMask groundLayer;
+        [SerializeField]
+        private LayerMask platformLayer;
+        [SerializeField]
+        private LayerMask enemyCollisionLayer;
+        [SerializeField]
+        private LayerMask objectLayer;
+        [SerializeField]
+        private LayerMask playerLayer;
 
         private Rigidbody2D _rb;
         private Collider2D _collider;
         private SpriteRenderer _sprite;
         private Animator _animator;
         private Vector3 _startPosition;
-    
+
         private int _movingDirection;
-        private readonly float _turningDelay = 0.1f;
         private float _turningCounter;
 
         private bool _active;
         private bool _angered;
 
+        /// <summary>
+        /// Angers the enemy, causing it to move towards the place from where the enemy is angered.
+        /// </summary>
+        /// <param name="origin">The place from where the enemy is angered.</param>
+        public void AngerEnemy(Vector2 origin)
+        {
+            if (origin.x < this.transform.position.x)
+            {
+                this._movingDirection = -1;
+                this._sprite.flipX = true;
+            }
+            else
+            {
+                this._movingDirection = 1;
+                this._sprite.flipX = false;
+            }
+
+            this._animator.enabled = true;
+
+            this._active = true;
+            this._angered = true;
+        }
+
+        /// <summary>
+        /// Reset the enemy to its original position and state.
+        /// </summary>
+        public void ResetEnemy()
+        {
+            this.gameObject.SetActive(false);
+
+            this._angered = false;
+
+            this._movingDirection = this.startToLeft ? -1 : 1;
+            this._sprite.flipX = this.startToLeft;
+
+            this.transform.position = this._startPosition;
+
+            this._active = this._sprite.isVisible;
+            this._animator.enabled = this._sprite.isVisible;
+
+            this.StopAllCoroutines();
+
+            this.gameObject.SetActive(true);
+        }
+
         private void Awake()
         {
-            _rb = GetComponent<Rigidbody2D>();
-            _collider = GetComponent<Collider2D>();
-            _sprite = GetComponent<SpriteRenderer>();
-            _animator = GetComponent<Animator>();
-            _startPosition = transform.position;
+            this._rb = this.GetComponent<Rigidbody2D>();
+            this._collider = this.GetComponent<Collider2D>();
+            this._sprite = this.GetComponent<SpriteRenderer>();
+            this._animator = this.GetComponent<Animator>();
+            this._startPosition = this.transform.position;
 
-            if (flying)
+            if (this.flying)
             {
-                _rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
+                this._rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
             }
 
-            if (ignoreCollision)
+            if (this.ignoreCollision)
             {
-                _collider.layerOverridePriority = 1;
+                this._collider.layerOverridePriority = 1;
+
                 // Exclude everything, but the player layer.
-                _collider.excludeLayers = ~playerLayer;
+                this._collider.excludeLayers = ~this.playerLayer;
             }
-        
-            _movingDirection = startToLeft ? -1 : 1;
-            _sprite.flipX = startToLeft;
 
-            _turningCounter = _turningDelay;
+            this._movingDirection = this.startToLeft ? -1 : 1;
+            this._sprite.flipX = this.startToLeft;
 
-            _animator.enabled = false;
+            this._turningCounter = TurningDelay;
+
+            this._animator.enabled = false;
         }
 
         /// <summary>
@@ -68,10 +130,10 @@ namespace Level
         /// </summary>
         private void OnBecameVisible()
         {
-            _active = true;
-            _animator.enabled = !staticTillAngered;
-        
-            StopAllCoroutines();
+            this._active = true;
+            this._animator.enabled = !this.staticTillAngered;
+
+            this.StopAllCoroutines();
         }
 
         /// <summary>
@@ -79,23 +141,23 @@ namespace Level
         /// </summary>
         private void OnBecameInvisible()
         {
-            if (!Application.isPlaying || !gameObject.activeSelf)
+            if (!Application.isPlaying || !this.gameObject.activeSelf)
             {
                 return;
             }
 
-            StartCoroutine(Despawn());
+            this.StartCoroutine(this.Despawn());
         }
 
         /// <summary>
         /// Actually despawn the enemy.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>...</returns>
         private IEnumerator Despawn()
         {
-            yield return new WaitForSeconds(despawnTime);
-        
-            StartCoroutine(RespawnEnemy());
+            yield return new WaitForSeconds(this.despawnTime);
+
+            this.StartCoroutine(this.RespawnEnemy());
         }
 
         /// <summary>
@@ -112,7 +174,7 @@ namespace Level
             if (other.GetContact(0).normal.y <= -0.5f)
             {
                 other.gameObject.GetComponent<PlayerController>().EnemyBounce();
-                gameObject.SetActive(false);
+                this.gameObject.SetActive(false);
             }
             else
             {
@@ -125,70 +187,52 @@ namespace Level
         /// </summary>
         private void FixedUpdate()
         {
-            if (!_active || (staticTillAngered && !_angered))
+            if (!this._active || (this.staticTillAngered && !this._angered))
             {
                 return;
             }
 
-            if (transform.position.y < LevelManager.Instance.GetKillPlaneY())
+            if (this.transform.position.y < LevelManager.Instance.GetKillPlaneY())
             {
-                gameObject.SetActive(false);
-                StopAllCoroutines();
+                this.gameObject.SetActive(false);
+                this.StopAllCoroutines();
                 return;
             }
-        
-            if (!ignoreCollision && TurnAround() && _turningCounter <= 0f)
+
+            if (!this.ignoreCollision && this.TurnAround() && this._turningCounter <= 0f)
             {
-                _movingDirection *= -1;
-                _sprite.flipX = !_sprite.flipX;
-                _turningCounter = _turningDelay;
+                this._movingDirection *= -1;
+                this._sprite.flipX = !this._sprite.flipX;
+                this._turningCounter = TurningDelay;
             }
 
-            _turningCounter -= Time.deltaTime;
-            _rb.linearVelocityX = _movingDirection * movingSpeed;
+            this._turningCounter -= Time.deltaTime;
+            this._rb.linearVelocityX = this._movingDirection * this.movingSpeed;
         }
-    
-        /// <summary>
-        /// Reset the enemy to its original position and state.
-        /// </summary>
-        public void ResetEnemy()
-        {
-            gameObject.SetActive(false);
-            
-            _angered = false;
-            
-            _movingDirection = startToLeft ? -1 : 1;
-            _sprite.flipX = startToLeft;
-        
-            transform.position = _startPosition;
 
-            _active = _sprite.isVisible;
-            _animator.enabled = _sprite.isVisible;
-            
-            StopAllCoroutines();
-        
-            gameObject.SetActive(true);
-        }
-        
         /// <summary>
         /// Wait until the enemy spawn is off-screen, before spawning it back.
         /// </summary>
         private IEnumerator RespawnEnemy()
         {
-            while (isOnScreen())
+            while (this.IsOnScreen())
             {
                 yield return new WaitForEndOfFrame();
             }
-            
-            ResetEnemy();
+
+            this.ResetEnemy();
         }
 
-        private bool isOnScreen()
+        /// <summary>
+        /// Checks if the enemy is on-screen.
+        /// </summary>
+        /// <returns>If enemy is on-screen.</returns>
+        private bool IsOnScreen()
         {
             if (Camera.main)
             {
-                Vector3 viewportPoint = Camera.main.WorldToViewportPoint(_startPosition);
-                return viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1;
+                Vector3 viewportPoint = Camera.main.WorldToViewportPoint(this._startPosition);
+                return viewportPoint.x is >= 0 and <= 1 && viewportPoint.y is >= 0 and <= 1;
             }
 
             return false;
@@ -201,12 +245,11 @@ namespace Level
         private bool IsGround()
         {
             RaycastHit2D ray = Physics2D.Raycast(
-                gameObject.transform.position + _movingDirection * new Vector3(_collider.bounds.extents.x + 0.1f, 0, 0),
+                this.gameObject.transform.position + (this._movingDirection * new Vector3(this._collider.bounds.extents.x + 0.1f, 0, 0)),
                 Vector2.down,
-                _collider.bounds.extents.y + 0.1f,
-                groundLayer | platformLayer | enemyCollisionLayer
-            );
-        
+                this._collider.bounds.extents.y + 0.1f,
+                this.groundLayer | this.platformLayer | this.enemyCollisionLayer);
+
             return ray.collider;
         }
 
@@ -217,11 +260,10 @@ namespace Level
         private bool IsAgainstWall()
         {
             RaycastHit2D ray = Physics2D.Raycast(
-                gameObject.transform.position - new Vector3(0, _collider.bounds.extents.y - 0.1f, 0), 
-                _movingDirection * Vector2.right, 
-                _collider.bounds.extents.x + 0.1f, 
-                groundLayer | enemyCollisionLayer | objectLayer
-            );
+                this.gameObject.transform.position - new Vector3(0, this._collider.bounds.extents.y - 0.1f, 0),
+                this._movingDirection * Vector2.right,
+                this._collider.bounds.extents.x + 0.1f,
+                this.groundLayer | this.enemyCollisionLayer | this.objectLayer);
 
             return ray.collider;
         }
@@ -234,31 +276,8 @@ namespace Level
         /// <returns>A bool depending on if the enemy should turn around.</returns>
         private bool TurnAround()
         {
-            bool turnOnGround = !flying && smart && !_angered;
-            return (IsGround() && IsAgainstWall()) || (turnOnGround && !IsGround());
-        }
-
-        /// <summary>
-        /// Angers the enemy, causing it to move towards the place from where the enemy is angered.
-        /// </summary>
-        /// <param name="origin">The place from where the enemy is angered.</param>
-        public void AngerEnemy(Vector2 origin)
-        {
-            if (origin.x < transform.position.x)
-            {
-                _movingDirection = -1;
-                _sprite.flipX = true;
-            }
-            else
-            {
-                _movingDirection = 1;
-                _sprite.flipX = false;
-            }
-
-            _animator.enabled = true;
-            
-            _active = true;
-            _angered = true;
+            bool turnOnGround = !this.flying && this.smart && !this._angered;
+            return (this.IsGround() && this.IsAgainstWall()) || (turnOnGround && !this.IsGround());
         }
     }
 }

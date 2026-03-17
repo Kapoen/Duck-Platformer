@@ -1,69 +1,58 @@
-using UnityEngine;
-
 namespace Player
 {
+    using UnityEngine;
+
+    /// <summary>
+    /// Handle the player honk interaction.
+    /// </summary>
     public class PlayerHonk : MonoBehaviour
     {
         [Header("Charge settings")]
-        [SerializeField] private float maxChargeTime = 0.4f;
-        [SerializeField] private float cooldownTime = 0.15f;
+        [SerializeField]
+        private float maxChargeTime = 0.4f;
+        [SerializeField]
+        private float cooldownTime = 0.15f;
 
         [Header("Recoil")]
-        [SerializeField] private float boostFactor = 0.25f;
-        [SerializeField] private float baseBoost = 1.5f;
-        [SerializeField] private float airBoost = 19.5f;
-        [SerializeField] private float recoilDuration = 0.25f;
+        [SerializeField]
+        private float boostFactor = 0.25f;
+        [SerializeField]
+        private float baseBoost = 1.5f;
+        [SerializeField]
+        private float airBoost = 19.5f;
+        [SerializeField]
+        private float recoilDuration = 0.25f;
 
         [Header("Sound waves")]
-        [SerializeField] private GameObject soundWavePrefab;
-        [SerializeField] private float minRadius = 1f;
-        [SerializeField] private float maxRadius = 10f;
+        [SerializeField]
+        private GameObject soundWavePrefab;
+        [SerializeField]
+        private float minRadius = 1f;
+        [SerializeField]
+        private float maxRadius = 10f;
 
         private float _cooldownCounter;
-    
+
         private bool _isCharging;
         private float _chargeTime;
         private bool _canAirHonk;
-    
+
         private SurroundingsCheck _surroundingsCheck;
         private PlayerSpriteManager _spriteManager;
         private PlayerController _playerController;
-
-        private void Awake()
-        {
-            _surroundingsCheck = gameObject.GetComponent<SurroundingsCheck>();
-            _spriteManager = gameObject.GetComponent<PlayerSpriteManager>();
-            _playerController = gameObject.GetComponent<PlayerController>();
-        }
-
-        private void Update()
-        {
-            _cooldownCounter -= Time.deltaTime;
-        
-            if (_isCharging)
-            {
-                _chargeTime += Time.deltaTime;
-                _chargeTime = Mathf.Clamp(_chargeTime, 0f, maxChargeTime);
-            }
-
-            if (_surroundingsCheck.IsGrounded())
-            {
-                _canAirHonk = true;
-            }
-        }
 
         /// <summary>
         /// Start charging the honk.
         /// </summary>
         public void OnHonkStart()
         {
-            if (!_surroundingsCheck.IsGrounded() && !_canAirHonk || _cooldownCounter > 0f)
+            if ((!this._surroundingsCheck.IsGrounded() && !this._canAirHonk) || this._cooldownCounter > 0f)
             {
                 return;
             }
 
-            _isCharging = true;
-            _chargeTime = 0f;
+            this._isCharging = true;
+            this._chargeTime = 0f;
         }
 
         /// <summary>
@@ -71,46 +60,69 @@ namespace Player
         /// </summary>
         public void OnHonkCanceled()
         {
-            if (!_isCharging)
+            if (!this._isCharging)
             {
                 return;
             }
 
-            float chargePercent = _chargeTime / maxChargeTime;
+            float chargePercent = this._chargeTime / this.maxChargeTime;
 
-            FireHonk(chargePercent);
+            this.FireHonk(chargePercent);
 
-            if (!_surroundingsCheck.IsGrounded())
+            if (!this._surroundingsCheck.IsGrounded())
             {
-                _canAirHonk = false;
+                this._canAirHonk = false;
             }
 
-            _isCharging = false;
+            this._isCharging = false;
         }
-    
+
         /// <summary>
         /// Fire the sound wave and apply the recoil to the player.
         /// </summary>
         /// <param name="chargePercent">How far along the charge is.</param>
         private void FireHonk(float chargePercent)
         {
-            _cooldownCounter = cooldownTime;
+            this._cooldownCounter = this.cooldownTime;
 
-            float radius = Mathf.Lerp(minRadius, maxRadius, chargePercent);
-            GameObject wave = Instantiate(soundWavePrefab, transform.position, Quaternion.identity);
-            wave.GetComponent<SoundWave>().Initialize(minRadius, radius, _spriteManager.FacingDirection());
-        
-            if (_surroundingsCheck.IsGrounded())
+            float radius = Mathf.Lerp(this.minRadius, this.maxRadius, chargePercent);
+            GameObject wave = Instantiate(this.soundWavePrefab, this.transform.position, Quaternion.identity);
+            wave.GetComponent<SoundWave>().Initialize(this.minRadius, radius, this._spriteManager.FacingDirection());
+
+            if (this._surroundingsCheck.IsGrounded())
             {
-                Vector2 movementSpeed = _playerController.GetMovementSpeed();
-            
-                Vector2 recoil = new Vector2(-1 * _spriteManager.FacingDirection() * (Mathf.Abs(movementSpeed.x) * boostFactor + baseBoost), 0);
-                _playerController.ApplyRecoil(recoil, recoilDuration);
+                Vector2 movementSpeed = this._playerController.GetMovementSpeed();
+
+                Vector2 recoil = new Vector2(-1 * this._spriteManager.FacingDirection() * ((Mathf.Abs(movementSpeed.x) * this.boostFactor) + this.baseBoost), 0);
+                this._playerController.ApplyRecoil(recoil, this.recoilDuration);
             }
             else
             {
-                Vector2 recoil = new Vector2(-1 * _spriteManager.FacingDirection() * airBoost, 0);
-                _playerController.ApplyRecoil(recoil, recoilDuration);
+                Vector2 recoil = new Vector2(-1 * this._spriteManager.FacingDirection() * this.airBoost, 0);
+                this._playerController.ApplyRecoil(recoil, this.recoilDuration);
+            }
+        }
+
+        private void Awake()
+        {
+            this._surroundingsCheck = this.gameObject.GetComponent<SurroundingsCheck>();
+            this._spriteManager = this.gameObject.GetComponent<PlayerSpriteManager>();
+            this._playerController = this.gameObject.GetComponent<PlayerController>();
+        }
+
+        private void Update()
+        {
+            this._cooldownCounter -= Time.deltaTime;
+
+            if (this._isCharging)
+            {
+                this._chargeTime += Time.deltaTime;
+                this._chargeTime = Mathf.Clamp(this._chargeTime, 0f, this.maxChargeTime);
+            }
+
+            if (this._surroundingsCheck.IsGrounded())
+            {
+                this._canAirHonk = true;
             }
         }
     }

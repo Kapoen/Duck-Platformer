@@ -1,31 +1,36 @@
-using UnityEngine;
-
 namespace Level
 {
+    using UnityEngine;
+
+    /// <summary>
+    /// Handle the logic for a door
+    /// </summary>
     public class Door : MonoBehaviour
     {
-        [SerializeField] private bool openUpwards = true;
-        [SerializeField] private float openTime = 2f;
-        [SerializeField] private float doorHeight = 2f;
+        [SerializeField]
+        private bool openUpwards = true;
+        [SerializeField]
+        private float openTime = 2f;
+        [SerializeField]
+        private float doorHeight = 2f;
 
         private float _movementSpeed;
 
         private Vector3 _startingPosition;
         private Vector3 _targetPosition;
-        
+
         private bool _opened;
         private bool _moving;
 
-        private void Awake()
+        /// <summary>
+        /// Resets the door to its original position.
+        /// </summary>
+        public void ResetDoor()
         {
-            _movementSpeed = doorHeight / openTime;
-            
-            _startingPosition = transform.position;
-            _targetPosition = new Vector3(
-                transform.position.x, 
-                openUpwards ? transform.position.y + doorHeight : transform.position.y - doorHeight, 
-                transform.position.z
-            );
+            this._opened = false;
+            this._moving = false;
+
+            this.transform.position = this._startingPosition;
         }
 
         /// <summary>
@@ -33,39 +38,38 @@ namespace Level
         /// </summary>
         public void OpenDoor()
         {
-            _moving = true;
+            this._moving = true;
+        }
+
+        private void Awake()
+        {
+            this._movementSpeed = this.doorHeight / this.openTime;
+
+            this._startingPosition = this.transform.position;
+            this._targetPosition = new Vector3(
+                this.transform.position.x,
+                this.openUpwards ? this.transform.position.y + this.doorHeight : this.transform.position.y - this.doorHeight,
+                this.transform.position.z);
         }
 
         private void Update()
         {
-            if (!_moving)
+            if (!this._moving)
             {
                 return;
             }
 
-            if ((!_opened && transform.position == _targetPosition) 
-                || (_opened && transform.position == _startingPosition))
+            if ((!this._opened && this.transform.position == this._targetPosition)
+                || (this._opened && this.transform.position == this._startingPosition))
             {
-                _opened = !_opened;
-                _moving = false;
+                this._opened = !this._opened;
+                this._moving = false;
             }
 
-            transform.position = Vector3.MoveTowards(
-                transform.position,
-                _opened ? _startingPosition : _targetPosition,
-                _movementSpeed * Time.deltaTime
-            );
-        }
-
-        /// <summary>
-        /// Resets the door to its original position.
-        /// </summary>
-        public void ResetDoor()
-        {
-            _opened = false;
-            _moving = false;
-
-            transform.position = _startingPosition;
+            this.transform.position = Vector3.MoveTowards(
+                this.transform.position,
+                this._opened ? this._startingPosition : this._targetPosition,
+                this._movementSpeed * Time.deltaTime);
         }
     }
 }

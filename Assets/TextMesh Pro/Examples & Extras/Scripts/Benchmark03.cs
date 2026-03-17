@@ -1,10 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.TextCore.LowLevel;
-
-
-namespace TMPro.Examples
+﻿namespace TMPro.Examples
 {
+    using System.Collections;
+    using UnityEngine;
+    using UnityEngine.TextCore.LowLevel;
 
     public class Benchmark03 : MonoBehaviour
     {
@@ -27,27 +25,27 @@ namespace TMPro.Examples
             TMP_FontAsset fontAsset = null;
 
             // Create Dynamic Font Asset for the given font file.
-            switch (Benchmark)
+            switch (this.Benchmark)
             {
                 case BenchmarkType.TMP_SDF_MOBILE:
-                    fontAsset = TMP_FontAsset.CreateFontAsset(SourceFont, 90, 9, GlyphRenderMode.SDFAA, 256, 256, AtlasPopulationMode.Dynamic);
+                    fontAsset = TMP_FontAsset.CreateFontAsset(this.SourceFont, 90, 9, GlyphRenderMode.SDFAA, 256, 256, AtlasPopulationMode.Dynamic);
                     break;
                 case BenchmarkType.TMP_SDF__MOBILE_SSD:
-                    fontAsset = TMP_FontAsset.CreateFontAsset(SourceFont, 90, 9, GlyphRenderMode.SDFAA, 256, 256, AtlasPopulationMode.Dynamic);
+                    fontAsset = TMP_FontAsset.CreateFontAsset(this.SourceFont, 90, 9, GlyphRenderMode.SDFAA, 256, 256, AtlasPopulationMode.Dynamic);
                     fontAsset.material.shader = Shader.Find("TextMeshPro/Mobile/Distance Field SSD");
                     break;
                 case BenchmarkType.TMP_SDF:
-                    fontAsset = TMP_FontAsset.CreateFontAsset(SourceFont, 90, 9, GlyphRenderMode.SDFAA, 256, 256, AtlasPopulationMode.Dynamic);
+                    fontAsset = TMP_FontAsset.CreateFontAsset(this.SourceFont, 90, 9, GlyphRenderMode.SDFAA, 256, 256, AtlasPopulationMode.Dynamic);
                     fontAsset.material.shader = Shader.Find("TextMeshPro/Distance Field");
                     break;
                 case BenchmarkType.TMP_BITMAP_MOBILE:
-                    fontAsset = TMP_FontAsset.CreateFontAsset(SourceFont, 90, 9, GlyphRenderMode.SMOOTH, 256, 256, AtlasPopulationMode.Dynamic);
+                    fontAsset = TMP_FontAsset.CreateFontAsset(this.SourceFont, 90, 9, GlyphRenderMode.SMOOTH, 256, 256, AtlasPopulationMode.Dynamic);
                     break;
             }
 
-            for (int i = 0; i < NumberOfSamples; i++)
+            for (int i = 0; i < this.NumberOfSamples; i++)
             {
-                switch (Benchmark)
+                switch (this.Benchmark)
                 {
                     case BenchmarkType.TMP_SDF_MOBILE:
                     case BenchmarkType.TMP_SDF__MOBILE_SSD:
@@ -64,7 +62,7 @@ namespace TMPro.Examples
                             textComponent.alignment = TextAlignmentOptions.Center;
                             textComponent.color = new Color32(255, 255, 0, 255);
 
-                            if (Benchmark == BenchmarkType.TMP_BITMAP_MOBILE)
+                            if (this.Benchmark == BenchmarkType.TMP_BITMAP_MOBILE)
                                 textComponent.fontSize = 132;
 
                         }
@@ -75,8 +73,8 @@ namespace TMPro.Examples
                             go.transform.position = new Vector3(0, 1.2f, 0);
 
                             TextMesh textMesh = go.AddComponent<TextMesh>();
-                            textMesh.GetComponent<Renderer>().sharedMaterial = SourceFont.material;
-                            textMesh.font = SourceFont;
+                            textMesh.GetComponent<Renderer>().sharedMaterial = this.SourceFont.material;
+                            textMesh.font = this.SourceFont;
                             textMesh.anchor = TextAnchor.MiddleCenter;
                             textMesh.fontSize = 130;
 

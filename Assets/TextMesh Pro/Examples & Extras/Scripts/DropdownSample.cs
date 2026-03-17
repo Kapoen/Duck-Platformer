@@ -14,6 +14,6 @@ public class DropdownSample: MonoBehaviour
 
 	public void OnButtonClick()
 	{
-		text.text = dropdownWithPlaceholder.value > -1 ? "Selected values:\n" + dropdownWithoutPlaceholder.value + " - " + dropdownWithPlaceholder.value : "Error: Please make a selection";
+		this.text.text = this.dropdownWithPlaceholder.value > -1 ? "Selected values:\n" + this.dropdownWithoutPlaceholder.value + " - " + this.dropdownWithPlaceholder.value : "Error: Please make a selection";
 	}
 }

@@ -1,11 +1,9 @@
-﻿using UnityEngine;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-
-
-namespace TMPro.Examples
+﻿namespace TMPro.Examples
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using UnityEngine;
 
     public class VertexZoom : MonoBehaviour
     {
@@ -19,32 +17,32 @@ namespace TMPro.Examples
 
         void Awake()
         {
-            m_TextComponent = GetComponent<TMP_Text>();
+            this.m_TextComponent = this.GetComponent<TMP_Text>();
         }
 
         void OnEnable()
         {
             // Subscribe to event fired when text object has been regenerated.
-            TMPro_EventManager.TEXT_CHANGED_EVENT.Add(ON_TEXT_CHANGED);
+            TMPro_EventManager.TEXT_CHANGED_EVENT.Add(this.ON_TEXT_CHANGED);
         }
 
         void OnDisable()
         {
             // UnSubscribe to event fired when text object has been regenerated.
-            TMPro_EventManager.TEXT_CHANGED_EVENT.Remove(ON_TEXT_CHANGED);
+            TMPro_EventManager.TEXT_CHANGED_EVENT.Remove(this.ON_TEXT_CHANGED);
         }
 
 
         void Start()
         {
-            StartCoroutine(AnimateVertexColors());
+            this.StartCoroutine(this.AnimateVertexColors());
         }
 
 
         void ON_TEXT_CHANGED(Object obj)
         {
-            if (obj == m_TextComponent)
-                hasTextChanged = true;
+            if (obj == this.m_TextComponent)
+                this.hasTextChanged = true;
         }
 
         /// <summary>
@@ -56,9 +54,9 @@ namespace TMPro.Examples
 
             // We force an update of the text object since it would only be updated at the end of the frame. Ie. before this code is executed on the first frame.
             // Alternatively, we could yield and wait until the end of the frame when the text object will be generated.
-            m_TextComponent.ForceMeshUpdate();
+            this.m_TextComponent.ForceMeshUpdate();
 
-            TMP_TextInfo textInfo = m_TextComponent.textInfo;
+            TMP_TextInfo textInfo = this.m_TextComponent.textInfo;
 
             Matrix4x4 matrix;
             TMP_MeshInfo[] cachedMeshInfoVertexData = textInfo.CopyMeshInfoVertexData();
@@ -67,17 +65,17 @@ namespace TMPro.Examples
             List<float> modifiedCharScale = new List<float>();
             List<int> scaleSortingOrder = new List<int>();
 
-            hasTextChanged = true;
+            this.hasTextChanged = true;
 
             while (true)
             {
                 // Allocate new vertices
-                if (hasTextChanged)
+                if (this.hasTextChanged)
                 {
                     // Get updated vertex data
                     cachedMeshInfoVertexData = textInfo.CopyMeshInfoVertexData();
 
-                    hasTextChanged = false;
+                    this.hasTextChanged = false;
                 }
 
                 int characterCount = textInfo.characterCount;
@@ -181,7 +179,7 @@ namespace TMPro.Examples
                     textInfo.meshInfo[i].mesh.SetUVs(0, textInfo.meshInfo[i].uvs0);
                     textInfo.meshInfo[i].mesh.colors32 = textInfo.meshInfo[i].colors32;
 
-                    m_TextComponent.UpdateGeometry(textInfo.meshInfo[i].mesh, i);
+                    this.m_TextComponent.UpdateGeometry(textInfo.meshInfo[i].mesh, i);
                 }
 
                 yield return new WaitForSeconds(0.1f);

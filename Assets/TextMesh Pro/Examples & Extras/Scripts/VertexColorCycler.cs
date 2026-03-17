@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-
-
-namespace TMPro.Examples
+﻿namespace TMPro.Examples
 {
+    using System.Collections;
+    using UnityEngine;
 
     public class VertexColorCycler : MonoBehaviour
     {
@@ -12,13 +10,13 @@ namespace TMPro.Examples
 
         void Awake()
         {
-            m_TextComponent = GetComponent<TMP_Text>();
+            this.m_TextComponent = this.GetComponent<TMP_Text>();
         }
 
 
         void Start()
         {
-            StartCoroutine(AnimateVertexColors());
+            this.StartCoroutine(this.AnimateVertexColors());
         }
 
 
@@ -29,13 +27,13 @@ namespace TMPro.Examples
         IEnumerator AnimateVertexColors()
         {
             // Force the text object to update right away so we can have geometry to modify right from the start.
-            m_TextComponent.ForceMeshUpdate();
+            this.m_TextComponent.ForceMeshUpdate();
 
-            TMP_TextInfo textInfo = m_TextComponent.textInfo;
+            TMP_TextInfo textInfo = this.m_TextComponent.textInfo;
             int currentCharacter = 0;
 
             Color32[] newVertexColors;
-            Color32 c0 = m_TextComponent.color;
+            Color32 c0 = this.m_TextComponent.color;
 
             while (true)
             {
@@ -68,7 +66,7 @@ namespace TMPro.Examples
                     newVertexColors[vertexIndex + 3] = c0;
 
                     // New function which pushes (all) updated vertex data to the appropriate meshes when using either the Mesh Renderer or CanvasRenderer.
-                    m_TextComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
+                    this.m_TextComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
 
                     // This last process could be done to only update the vertex data that has changed as opposed to all of the vertex data but it would require extra steps and knowing what type of renderer is used.
                     // These extra steps would be a performance optimization but it is unlikely that such optimization will be necessary.

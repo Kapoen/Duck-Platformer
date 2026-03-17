@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-
-
-namespace TMPro.Examples
+﻿namespace TMPro.Examples
 {
+    using System.Collections;
+    using UnityEngine;
 
     public class ObjectSpin : MonoBehaviour
     {
@@ -25,41 +23,41 @@ namespace TMPro.Examples
 
         void Awake()
         {
-            m_transform = transform;
-            m_initial_Rotation = m_transform.rotation.eulerAngles;
-            m_initial_Position = m_transform.position;
+            this.m_transform = this.transform;
+            this.m_initial_Rotation = this.m_transform.rotation.eulerAngles;
+            this.m_initial_Position = this.m_transform.position;
 
-            Light light = GetComponent<Light>();
-            m_lightColor = light != null ? light.color : Color.black;
+            Light light = this.GetComponent<Light>();
+            this.m_lightColor = light != null ? light.color : Color.black;
         }
 
 
         // Update is called once per frame
         void Update()
         {
-            switch (Motion)
+            switch (this.Motion)
             {
                 case MotionType.Rotation:
-                    m_transform.Rotate(0, SpinSpeed * Time.deltaTime, 0);
+                    this.m_transform.Rotate(0, this.SpinSpeed * Time.deltaTime, 0);
                     break;
                 case MotionType.SearchLight:
-                    m_time += SpinSpeed * Time.deltaTime;
-                    m_transform.rotation = Quaternion.Euler(m_initial_Rotation.x, Mathf.Sin(m_time) * RotationRange + m_initial_Rotation.y, m_initial_Rotation.z);
+                    this.m_time += this.SpinSpeed * Time.deltaTime;
+                    this.m_transform.rotation = Quaternion.Euler(this.m_initial_Rotation.x, (Mathf.Sin(this.m_time) * this.RotationRange) + this.m_initial_Rotation.y, this.m_initial_Rotation.z);
                     break;
                 case MotionType.Translation:
-                    m_time += TranslationSpeed * Time.deltaTime;
+                    this.m_time += this.TranslationSpeed * Time.deltaTime;
 
-                    float x = TranslationDistance.x * Mathf.Cos(m_time);
-                    float y = TranslationDistance.y * Mathf.Sin(m_time) * Mathf.Cos(m_time * 1f);
-                    float z = TranslationDistance.z * Mathf.Sin(m_time);
+                    float x = this.TranslationDistance.x * Mathf.Cos(this.m_time);
+                    float y = this.TranslationDistance.y * Mathf.Sin(this.m_time) * Mathf.Cos(this.m_time * 1f);
+                    float z = this.TranslationDistance.z * Mathf.Sin(this.m_time);
 
-                    m_transform.position = m_initial_Position + new Vector3(x, z, y);
+                    this.m_transform.position = this.m_initial_Position + new Vector3(x, z, y);
 
                     // Drawing light patterns because they can be cool looking.
                     //if (Time.frameCount > 1)
                     //    Debug.DrawLine(m_transform.position, m_prevPOS, m_lightColor, 100f);
 
-                    m_prevPOS = m_transform.position;
+                    this.m_prevPOS = this.m_transform.position;
                     break;
             }
         }

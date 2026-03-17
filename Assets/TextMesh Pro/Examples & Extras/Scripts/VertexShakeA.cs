@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-
-
-namespace TMPro.Examples
+﻿namespace TMPro.Examples
 {
+    using System.Collections;
+    using UnityEngine;
 
     public class VertexShakeA : MonoBehaviour
     {
@@ -19,31 +17,31 @@ namespace TMPro.Examples
 
         void Awake()
         {
-            m_TextComponent = GetComponent<TMP_Text>();
+            this.m_TextComponent = this.GetComponent<TMP_Text>();
         }
 
         void OnEnable()
         {
             // Subscribe to event fired when text object has been regenerated.
-            TMPro_EventManager.TEXT_CHANGED_EVENT.Add(ON_TEXT_CHANGED);
+            TMPro_EventManager.TEXT_CHANGED_EVENT.Add(this.ON_TEXT_CHANGED);
         }
 
         void OnDisable()
         {
-            TMPro_EventManager.TEXT_CHANGED_EVENT.Remove(ON_TEXT_CHANGED);
+            TMPro_EventManager.TEXT_CHANGED_EVENT.Remove(this.ON_TEXT_CHANGED);
         }
 
 
         void Start()
         {
-            StartCoroutine(AnimateVertexColors());
+            this.StartCoroutine(this.AnimateVertexColors());
         }
 
 
         void ON_TEXT_CHANGED(Object obj)
         {
-            if (obj = m_TextComponent)
-                hasTextChanged = true;
+            if (obj = this.m_TextComponent)
+                this.hasTextChanged = true;
         }
 
         /// <summary>
@@ -55,19 +53,19 @@ namespace TMPro.Examples
 
             // We force an update of the text object since it would only be updated at the end of the frame. Ie. before this code is executed on the first frame.
             // Alternatively, we could yield and wait until the end of the frame when the text object will be generated.
-            m_TextComponent.ForceMeshUpdate();
+            this.m_TextComponent.ForceMeshUpdate();
 
-            TMP_TextInfo textInfo = m_TextComponent.textInfo;
+            TMP_TextInfo textInfo = this.m_TextComponent.textInfo;
 
             Matrix4x4 matrix;
             Vector3[][] copyOfVertices = new Vector3[0][];
 
-            hasTextChanged = true;
+            this.hasTextChanged = true;
 
             while (true)
             {
-                // Allocate new vertices 
-                if (hasTextChanged)
+                // Allocate new vertices
+                if (this.hasTextChanged)
                 {
                     if (copyOfVertices.Length < textInfo.meshInfo.Length)
                         copyOfVertices = new Vector3[textInfo.meshInfo.Length][];
@@ -78,7 +76,7 @@ namespace TMPro.Examples
                         copyOfVertices[i] = new Vector3[length];
                     }
 
-                    hasTextChanged = false;
+                    this.hasTextChanged = false;
                 }
 
                 int characterCount = textInfo.characterCount;
@@ -101,7 +99,7 @@ namespace TMPro.Examples
 
                     // Determine the center of each line
                     Vector3 centerOfLine = (textInfo.characterInfo[first].bottomLeft + textInfo.characterInfo[last].topRight) / 2;
-                    Quaternion rotation = Quaternion.Euler(0, 0, Random.Range(-0.25f, 0.25f) * RotationMultiplier);
+                    Quaternion rotation = Quaternion.Euler(0, 0, Random.Range(-0.25f, 0.25f) * this.RotationMultiplier);
 
                     // Iterate through each character of the line.
                     for (int j = first; j <= last; j++)
@@ -127,7 +125,7 @@ namespace TMPro.Examples
                         copyOfVertices[materialIndex][vertexIndex + 3] = sourceVertices[vertexIndex + 3] - centerOfLine;
 
                         // Determine the random scale change for each character.
-                        float randomScale = Random.Range(0.995f - 0.001f * ScaleMultiplier, 1.005f + 0.001f * ScaleMultiplier);
+                        float randomScale = Random.Range(0.995f - (0.001f * this.ScaleMultiplier), 1.005f + (0.001f * this.ScaleMultiplier));
 
                         // Setup the matrix rotation.
                         matrix = Matrix4x4.TRS(Vector3.one, rotation, Vector3.one * randomScale);
@@ -150,7 +148,7 @@ namespace TMPro.Examples
                 for (int i = 0; i < textInfo.meshInfo.Length; i++)
                 {
                     textInfo.meshInfo[i].mesh.vertices = copyOfVertices[i];
-                    m_TextComponent.UpdateGeometry(textInfo.meshInfo[i].mesh, i);
+                    this.m_TextComponent.UpdateGeometry(textInfo.meshInfo[i].mesh, i);
                 }
 
                 yield return new WaitForSeconds(0.1f);

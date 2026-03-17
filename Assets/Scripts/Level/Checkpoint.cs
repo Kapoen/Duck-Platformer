@@ -1,21 +1,25 @@
-using UnityEngine;
-
 namespace Level
 {
+    using UnityEngine;
+
+    /// <summary>
+    /// Handle checkpoint logic.
+    /// </summary>
     public class Checkpoint : MonoBehaviour
     {
         [Header("Checkpoint")]
-        [SerializeField] private int checkpointNumber;
-    
+        [SerializeField]
+        private int checkpointNumber;
+
         private LevelManager _levelManager;
         private SpriteRenderer _spriteRenderer;
 
         private bool _activated;
-    
+
         private void Start()
         {
-            _levelManager = LevelManager.Instance;
-            _spriteRenderer = GetComponent<SpriteRenderer>();
+            this._levelManager = LevelManager.Instance;
+            this._spriteRenderer = this.GetComponent<SpriteRenderer>();
         }
 
         /// <summary>
@@ -24,16 +28,16 @@ namespace Level
         /// <param name="other">The <see cref="GameObject"/> that enters the collider hitbox.</param>
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (_activated)
+            if (this._activated)
             {
                 return;
             }
-        
+
             if (other.CompareTag("Player"))
             {
-                _levelManager.CheckpointActivated(gameObject.transform, checkpointNumber);
-                _spriteRenderer.color = Color.darkGoldenRod;
-                _activated = true;
+                this._levelManager.CheckpointActivated(this.gameObject.transform, this.checkpointNumber);
+                this._spriteRenderer.color = Color.darkGoldenRod;
+                this._activated = true;
             }
         }
     }

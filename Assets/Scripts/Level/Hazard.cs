@@ -1,8 +1,11 @@
-using Player;
-using UnityEngine;
-
 namespace Level
 {
+    using Player;
+    using UnityEngine;
+
+    /// <summary>
+    /// Handle the logic for a hazard.
+    /// </summary>
     public class Hazard : MonoBehaviour
     {
         /// <summary>

@@ -1,95 +1,46 @@
-using Player;
-using System.Collections.Generic;
-using Unity.Cinemachine;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using Utils;
-
 namespace Level
 {
+    using System.Collections.Generic;
+    using Player;
+    using Unity.Cinemachine;
+    using UnityEngine;
+    using UnityEngine.SceneManagement;
+    using Utils;
+
+    /// <summary>
+    /// Handle the general logic of a level.
+    /// </summary>
     public class LevelManager : MonoBehaviour
     {
-        public static LevelManager Instance;
-
-        private PlayerSpriteManager _spriteManager;
-
-        [SerializeField] private CinemachineCamera cineCamera;
-        [SerializeField] private Transform playerSpawn;
-        [SerializeField] private float killPlaneY;
-        private Transform _currentSpawn;
-        private int _currentCheckpoint;
-    
-        private GameObject _player;
-
         private readonly List<Platform> _platforms = new List<Platform>();
         private readonly List<Enemy> _enemies = new List<Enemy>();
         private readonly List<Lever> _levers = new List<Lever>();
         private readonly List<Door> _doors = new List<Door>();
 
-        private void Awake()
-        {
-            if (!Instance)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        
-            _player = GameObject.FindGameObjectWithTag("Player");
-        
-            _currentSpawn = playerSpawn;
-            _player.transform.position = playerSpawn.position;
-        
-            _platforms.AddRange(FindObjectsByType<Platform>(FindObjectsInactive.Include, FindObjectsSortMode.None));
-            _enemies.AddRange(FindObjectsByType<Enemy>(FindObjectsInactive.Include, FindObjectsSortMode.None));
-            _levers.AddRange(FindObjectsByType<Lever>(FindObjectsInactive.Include, FindObjectsSortMode.None));
-            _doors.AddRange(FindObjectsByType<Door>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+        private PlayerSpriteManager _spriteManager;
 
-            _spriteManager = _player.GetComponent<PlayerSpriteManager>();
-        }
+        [SerializeField]
+        private CinemachineCamera cineCamera;
+        [SerializeField]
+        private Transform playerSpawn;
+        [SerializeField]
+        private float killPlaneY;
+        private Transform _currentSpawn;
+        private int _currentCheckpoint;
+
+        private GameObject _player;
 
         /// <summary>
-        /// Resets everything in the level to its original state.
+        /// Gets the level manager instance.
         /// </summary>
-        private void ResetLevel()
-        {
-            foreach (Platform platform in _platforms)
-            {
-                platform.ResetPlatform();
-            }
-        
-            foreach (Enemy enemy in _enemies)
-            {
-                enemy.ResetEnemy();
-            }
-            
-            foreach (Lever lever in _levers)
-            {
-                lever.ResetLever();
-            }
-            
-            foreach (Door door in _doors)
-            {
-                door.ResetDoor();
-            }
-
-            // TODO: Add cooldown for respawning
-            _spriteManager.OnRespawn();
-            
-            cineCamera.Follow = _player.transform;
-        
-            _player.transform.position = _currentSpawn.position;
-            _player.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
-        }
+        public static LevelManager Instance { get; private set; }
 
         /// <summary>
         /// Trigger for if the player dies.
         /// </summary>
         public void OnPlayerDeath()
         {
-            ResetLevel();
+            this.ResetLevel();
         }
 
         /// <summary>
@@ -99,10 +50,10 @@ namespace Level
         /// <param name="checkpointNumber">The number of the checkpoint.</param>
         public void CheckpointActivated(Transform position, int checkpointNumber)
         {
-            if (checkpointNumber > _currentCheckpoint)
+            if (checkpointNumber > this._currentCheckpoint)
             {
-                _currentSpawn = position;
-                _currentCheckpoint = checkpointNumber;
+                this._currentSpawn = position;
+                this._currentCheckpoint = checkpointNumber;
             }
         }
 
@@ -118,10 +69,68 @@ namespace Level
         /// <summary>
         /// Get the y value for the kill plane.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The y value of the kill plane.</returns>
         public float GetKillPlaneY()
         {
-            return killPlaneY;
+            return this.killPlaneY;
+        }
+
+        private void Awake()
+        {
+            if (!Instance)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(this.gameObject);
+            }
+
+            this._player = GameObject.FindGameObjectWithTag("Player");
+
+            this._currentSpawn = this.playerSpawn;
+            this._player.transform.position = this.playerSpawn.position;
+
+            this._platforms.AddRange(FindObjectsByType<Platform>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+            this._enemies.AddRange(FindObjectsByType<Enemy>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+            this._levers.AddRange(FindObjectsByType<Lever>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+            this._doors.AddRange(FindObjectsByType<Door>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+
+            this._spriteManager = this._player.GetComponent<PlayerSpriteManager>();
+        }
+
+        /// <summary>
+        /// Resets everything in the level to its original state.
+        /// </summary>
+        private void ResetLevel()
+        {
+            foreach (Platform platform in this._platforms)
+            {
+                platform.ResetPlatform();
+            }
+
+            foreach (Enemy enemy in this._enemies)
+            {
+                enemy.ResetEnemy();
+            }
+
+            foreach (Lever lever in this._levers)
+            {
+                lever.ResetLever();
+            }
+
+            foreach (Door door in this._doors)
+            {
+                door.ResetDoor();
+            }
+
+            // TODO: Add cooldown for respawning
+            this._spriteManager.OnRespawn();
+
+            this.cineCamera.Follow = this._player.transform;
+
+            this._player.transform.position = this._currentSpawn.position;
+            this._player.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
         }
     }
 }

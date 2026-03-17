@@ -1,19 +1,16 @@
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Tilemaps;
-
 namespace Level
 {
+    using System.Collections.Generic;
+    using UnityEngine;
+    using UnityEngine.Tilemaps;
+
+    /// <summary>
+    /// Handle the logic for a cracked wall.
+    /// </summary>
     public class CrackedWall : MonoBehaviour
     {
         private TilemapCollider2D _collider;
         private Tilemap _tilemap;
-
-        private void Awake()
-        {
-            _collider = gameObject.GetComponent<TilemapCollider2D>();
-            _tilemap = gameObject.GetComponent<Tilemap>();
-        }
 
         /// <summary>
         /// Crack the wall, by removing all adjacent cells using flood fill.
@@ -21,13 +18,13 @@ namespace Level
         /// <param name="hit">Where the wall was cracked.</param>
         public void CrackWall(Vector2 hit)
         {
-            _collider.enabled = false;
+            this._collider.enabled = false;
 
-            Vector3Int hitCell = _tilemap.WorldToCell(hit);
-            _tilemap.SetTile(hitCell, null);
+            Vector3Int hitCell = this._tilemap.WorldToCell(hit);
+            this._tilemap.SetTile(hitCell, null);
 
             Vector3Int[] directions = { Vector3Int.up, Vector3Int.right, Vector3Int.left, Vector3Int.down };
-            
+
             Queue<Vector3Int> queue = new Queue<Vector3Int>();
             queue.Enqueue(hitCell);
 
@@ -39,17 +36,24 @@ namespace Level
                 {
                     Vector3Int cell = currentCell + direction;
 
-                    if (_tilemap.HasTile(cell))
+                    if (this._tilemap.HasTile(cell))
                     {
-                        _tilemap.SetTile(cell, null);
+                        this._tilemap.SetTile(cell, null);
                         queue.Enqueue(cell);
                     }
                 }
             }
 
-            _collider.enabled = true;
+            this._collider.enabled = true;
+
             // Trigger an update on the collider.
-            _collider.compositeOperation = Collider2D.CompositeOperation.Merge;
+            this._collider.compositeOperation = Collider2D.CompositeOperation.Merge;
+        }
+
+        private void Awake()
+        {
+            this._collider = this.gameObject.GetComponent<TilemapCollider2D>();
+            this._tilemap = this.gameObject.GetComponent<Tilemap>();
         }
     }
 }

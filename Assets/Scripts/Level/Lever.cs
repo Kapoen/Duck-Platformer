@@ -1,68 +1,68 @@
-﻿using System;
-using System.Collections;
-using UnityEngine;
-
-namespace Level
+﻿namespace Level
 {
+    using System;
+    using System.Collections;
+    using UnityEngine;
+
+    /// <summary>
+    /// The type of what the lever activates.
+    /// </summary>
     public enum LeverType
     {
+        /// <summary>
+        /// The lever activates a door.
+        /// </summary>
         Door,
-        Platform
+
+        /// <summary>
+        /// The lever activates a platform.
+        /// </summary>
+        Platform,
     }
-    
+
+    /// <summary>
+    /// Handles the logic of a lever.
+    /// </summary>
     public class Lever : MonoBehaviour
     {
-        [SerializeField] private GameObject linkedObject;
-        [SerializeField] private LeverType type;
-        [SerializeField] private float cooldownTime = 0.5f;
+        [SerializeField]
+        private GameObject linkedObject;
+        [SerializeField]
+        private LeverType type;
+        [SerializeField]
+        private float cooldownTime = 0.5f;
 
         private SpriteRenderer _spriteRenderer;
 
         private bool _onCooldown;
 
-        private void Start()
-        {
-            _spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        }
-
         /// <summary>
         /// Activate the lever.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">Throws if unkown lever type.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Throws if unknown lever type.</exception>
         public void ActivateLever()
         {
-            if (_onCooldown)
+            if (this._onCooldown)
             {
                 return;
             }
-            
-            switch (type)
+
+            switch (this.type)
             {
                 case LeverType.Door:
-                    linkedObject.GetComponent<Door>().OpenDoor();
+                    this.linkedObject.GetComponent<Door>().OpenDoor();
                     break;
                 case LeverType.Platform:
-                    linkedObject.GetComponent<Platform>().SwitchMoving();
+                    this.linkedObject.GetComponent<Platform>().SwitchMoving();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            _spriteRenderer.flipY = !_spriteRenderer.flipY;
+            this._spriteRenderer.flipY = !this._spriteRenderer.flipY;
 
-            _onCooldown = true;
-            StartCoroutine(LeverCooldown());
-        }
-
-        /// <summary>
-        /// Wait for the lever cooldown.
-        /// </summary>
-        /// <returns></returns>
-        private IEnumerator LeverCooldown()
-        {
-            yield return new WaitForSeconds(cooldownTime);
-
-            _onCooldown = false;
+            this._onCooldown = true;
+            this.StartCoroutine(this.LeverCooldown());
         }
 
         /// <summary>
@@ -70,10 +70,26 @@ namespace Level
         /// </summary>
         public void ResetLever()
         {
-            StopAllCoroutines();
-            _onCooldown = false;
-            
-            _spriteRenderer.flipY = false;
+            this.StopAllCoroutines();
+            this._onCooldown = false;
+
+            this._spriteRenderer.flipY = false;
+        }
+
+        /// <summary>
+        /// Wait for the lever cooldown.
+        /// </summary>
+        /// <returns>...</returns>
+        private IEnumerator LeverCooldown()
+        {
+            yield return new WaitForSeconds(this.cooldownTime);
+
+            this._onCooldown = false;
+        }
+
+        private void Start()
+        {
+            this._spriteRenderer = this.gameObject.GetComponent<SpriteRenderer>();
         }
     }
 }

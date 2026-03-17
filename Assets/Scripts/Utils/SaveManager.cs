@@ -1,40 +1,20 @@
-using System.Collections.Generic;
-using System.IO;
-using UnityEngine;
+namespace Utils
+{
+    using System.IO;
+    using UnityEngine;
 
-namespace Utils {
+    /// <summary>
+    /// Handles saving the game.
+    /// </summary>
     public class SaveManager : MonoBehaviour
     {
-        public static SaveManager Instance;
-
         private string _savePath;
         private SaveData _currentSave = new SaveData();
-    
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-
-            _savePath = Application.persistentDataPath + "/save.json";
-        }
 
         /// <summary>
-        /// Save the data to a file.
+        /// Gets the save manager instance.
         /// </summary>
-        /// <param name="data">The save data.</param>
-        private void Save(SaveData data)
-        {
-            _currentSave = data;
-        
-            string json = JsonUtility.ToJson(data, true);
-            File.WriteAllText(_savePath, json);
-        }
+        public static SaveManager Instance { get; private set; }
 
         /// <summary>
         /// Load the save data.
@@ -42,15 +22,15 @@ namespace Utils {
         /// <returns>The loaded save data.</returns>
         public SaveData Load()
         {
-            if (!File.Exists(_savePath))
+            if (!File.Exists(this._savePath))
             {
                 return new SaveData();
             }
 
-            string json = File.ReadAllText(_savePath);
+            string json = File.ReadAllText(this._savePath);
             SaveData save = JsonUtility.FromJson<SaveData>(json);
 
-            _currentSave = save;
+            this._currentSave = save;
             return save;
         }
 
@@ -60,18 +40,38 @@ namespace Utils {
         /// <param name="levelName">The name of the level, which has been completed.</param>
         public void CompleteLevel(string levelName)
         {
-            if (!_currentSave.completedLevels.Contains(levelName))
+            if (!this._currentSave.CompletedLevels.Contains(levelName))
             {
-                _currentSave.completedLevels.Add(levelName);
+                this._currentSave.CompletedLevels.Add(levelName);
             }
-        
-            Save(_currentSave);
-        }
-    }
 
-    [System.Serializable]
-    public class SaveData
-    {
-        public List<string> completedLevels = new List<string>();
+            this.Save(this._currentSave);
+        }
+
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Destroy(this.gameObject);
+                return;
+            }
+
+            Instance = this;
+            DontDestroyOnLoad(this.gameObject);
+
+            this._savePath = Application.persistentDataPath + "/save.json";
+        }
+
+        /// <summary>
+        /// Save the data to a file.
+        /// </summary>
+        /// <param name="data">The save data.</param>
+        private void Save(SaveData data)
+        {
+            this._currentSave = data;
+
+            string json = JsonUtility.ToJson(data, true);
+            File.WriteAllText(this._savePath, json);
+        }
     }
 }

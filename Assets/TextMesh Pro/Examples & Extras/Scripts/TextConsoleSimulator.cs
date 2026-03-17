@@ -1,9 +1,8 @@
-using UnityEngine;
-using System.Collections;
-
-
 namespace TMPro.Examples
 {
+    using System.Collections;
+    using UnityEngine;
+
     public class TextConsoleSimulator : MonoBehaviour
     {
         private TMP_Text m_TextComponent;
@@ -11,13 +10,13 @@ namespace TMPro.Examples
 
         void Awake()
         {
-            m_TextComponent = gameObject.GetComponent<TMP_Text>();
+            this.m_TextComponent = this.gameObject.GetComponent<TMP_Text>();
         }
 
 
         void Start()
         {
-            StartCoroutine(RevealCharacters(m_TextComponent));
+            this.StartCoroutine(this.RevealCharacters(this.m_TextComponent));
             //StartCoroutine(RevealWords(m_TextComponent));
         }
 
@@ -25,19 +24,19 @@ namespace TMPro.Examples
         void OnEnable()
         {
             // Subscribe to event fired when text object has been regenerated.
-            TMPro_EventManager.TEXT_CHANGED_EVENT.Add(ON_TEXT_CHANGED);
+            TMPro_EventManager.TEXT_CHANGED_EVENT.Add(this.ON_TEXT_CHANGED);
         }
 
         void OnDisable()
         {
-            TMPro_EventManager.TEXT_CHANGED_EVENT.Remove(ON_TEXT_CHANGED);
+            TMPro_EventManager.TEXT_CHANGED_EVENT.Remove(this.ON_TEXT_CHANGED);
         }
 
 
         // Event received when the text object has changed.
         void ON_TEXT_CHANGED(Object obj)
         {
-            hasTextChanged = true;
+            this.hasTextChanged = true;
         }
 
 
@@ -56,10 +55,10 @@ namespace TMPro.Examples
 
             while (true)
             {
-                if (hasTextChanged)
+                if (this.hasTextChanged)
                 {
                     totalVisibleCharacters = textInfo.characterCount; // Update visible character count.
-                    hasTextChanged = false; 
+                    this.hasTextChanged = false;
                 }
 
                 if (visibleCount > totalVisibleCharacters)

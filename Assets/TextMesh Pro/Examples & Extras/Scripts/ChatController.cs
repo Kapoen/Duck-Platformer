@@ -13,39 +13,39 @@ public class ChatController : MonoBehaviour {
 
     void OnEnable()
     {
-        ChatInputField.onSubmit.AddListener(AddToChatOutput);
+        this.ChatInputField.onSubmit.AddListener(this.AddToChatOutput);
     }
 
     void OnDisable()
     {
-        ChatInputField.onSubmit.RemoveListener(AddToChatOutput);
+        this.ChatInputField.onSubmit.RemoveListener(this.AddToChatOutput);
     }
 
 
     void AddToChatOutput(string newText)
     {
         // Clear Input Field
-        ChatInputField.text = string.Empty;
+        this.ChatInputField.text = string.Empty;
 
         var timeNow = System.DateTime.Now;
 
         string formattedInput = "[<#FFFF80>" + timeNow.Hour.ToString("d2") + ":" + timeNow.Minute.ToString("d2") + ":" + timeNow.Second.ToString("d2") + "</color>] " + newText;
 
-        if (ChatDisplayOutput != null)
+        if (this.ChatDisplayOutput != null)
         {
             // No special formatting for first entry
             // Add line feed before each subsequent entries
-            if (ChatDisplayOutput.text == string.Empty)
-                ChatDisplayOutput.text = formattedInput;
+            if (this.ChatDisplayOutput.text == string.Empty)
+                this.ChatDisplayOutput.text = formattedInput;
             else
-                ChatDisplayOutput.text += "\n" + formattedInput;
+                this.ChatDisplayOutput.text += "\n" + formattedInput;
         }
 
         // Keep Chat input field active
-        ChatInputField.ActivateInputField();
+        this.ChatInputField.ActivateInputField();
 
         // Set the scrollbar to the bottom when next text is submitted.
-        ChatScrollbar.value = 0;
+        this.ChatScrollbar.value = 0;
     }
 
 }

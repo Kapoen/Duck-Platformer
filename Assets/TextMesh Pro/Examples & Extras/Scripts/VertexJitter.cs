@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-
-
-namespace TMPro.Examples
+﻿namespace TMPro.Examples
 {
+    using System.Collections;
+    using UnityEngine;
 
     public class VertexJitter : MonoBehaviour
     {
@@ -27,31 +25,31 @@ namespace TMPro.Examples
 
         void Awake()
         {
-            m_TextComponent = GetComponent<TMP_Text>();
+            this.m_TextComponent = this.GetComponent<TMP_Text>();
         }
 
         void OnEnable()
         {
             // Subscribe to event fired when text object has been regenerated.
-            TMPro_EventManager.TEXT_CHANGED_EVENT.Add(ON_TEXT_CHANGED);
+            TMPro_EventManager.TEXT_CHANGED_EVENT.Add(this.ON_TEXT_CHANGED);
         }
 
         void OnDisable()
         {
-            TMPro_EventManager.TEXT_CHANGED_EVENT.Remove(ON_TEXT_CHANGED);
+            TMPro_EventManager.TEXT_CHANGED_EVENT.Remove(this.ON_TEXT_CHANGED);
         }
 
 
         void Start()
         {
-            StartCoroutine(AnimateVertexColors());
+            this.StartCoroutine(this.AnimateVertexColors());
         }
 
 
         void ON_TEXT_CHANGED(Object obj)
         {
-            if (obj == m_TextComponent)
-                hasTextChanged = true;
+            if (obj == this.m_TextComponent)
+                this.hasTextChanged = true;
         }
 
         /// <summary>
@@ -63,14 +61,14 @@ namespace TMPro.Examples
 
             // We force an update of the text object since it would only be updated at the end of the frame. Ie. before this code is executed on the first frame.
             // Alternatively, we could yield and wait until the end of the frame when the text object will be generated.
-            m_TextComponent.ForceMeshUpdate();
+            this.m_TextComponent.ForceMeshUpdate();
 
-            TMP_TextInfo textInfo = m_TextComponent.textInfo;
+            TMP_TextInfo textInfo = this.m_TextComponent.textInfo;
 
             Matrix4x4 matrix;
 
             int loopCount = 0;
-            hasTextChanged = true;
+            this.hasTextChanged = true;
 
             // Create an Array which contains pre-computed Angle Ranges and Speeds for a bunch of characters.
             VertexAnim[] vertexAnim = new VertexAnim[1024];
@@ -86,12 +84,12 @@ namespace TMPro.Examples
             while (true)
             {
                 // Get new copy of vertex data if the text has changed.
-                if (hasTextChanged)
+                if (this.hasTextChanged)
                 {
                     // Update the copy of the vertex data for the text object.
                     cachedMeshInfo = textInfo.CopyMeshInfoVertexData();
 
-                    hasTextChanged = false;
+                    this.hasTextChanged = false;
                 }
 
                 int characterCount = textInfo.characterCount;
@@ -143,7 +141,7 @@ namespace TMPro.Examples
                     vertAnim.angle = Mathf.SmoothStep(-vertAnim.angleRange, vertAnim.angleRange, Mathf.PingPong(loopCount / 25f * vertAnim.speed, 1f));
                     Vector3 jitterOffset = new Vector3(Random.Range(-.25f, .25f), Random.Range(-.25f, .25f), 0);
 
-                    matrix = Matrix4x4.TRS(jitterOffset * CurveScale, Quaternion.Euler(0, 0, Random.Range(-5f, 5f) * AngleMultiplier), Vector3.one);
+                    matrix = Matrix4x4.TRS(jitterOffset * this.CurveScale, Quaternion.Euler(0, 0, Random.Range(-5f, 5f) * this.AngleMultiplier), Vector3.one);
 
                     destinationVertices[vertexIndex + 0] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 0]);
                     destinationVertices[vertexIndex + 1] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 1]);
@@ -162,7 +160,7 @@ namespace TMPro.Examples
                 for (int i = 0; i < textInfo.meshInfo.Length; i++)
                 {
                     textInfo.meshInfo[i].mesh.vertices = textInfo.meshInfo[i].vertices;
-                    m_TextComponent.UpdateGeometry(textInfo.meshInfo[i].mesh, i);
+                    this.m_TextComponent.UpdateGeometry(textInfo.meshInfo[i].mesh, i);
                 }
 
                 loopCount += 1;
