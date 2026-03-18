@@ -270,26 +270,27 @@ namespace Player
         /// </summary>
         private void ApplyJump()
         {
-            if (this._jumpBufferCounter > 0f && this._coyoteTimeCounter > 0f)
-            {
-                this._rb.linearVelocityY = this.jumpForce;
-                this._jumpBufferCounter = 0f;
-                this._coyoteTimeCounter = 0f;
-
-                this._spriteManager.OnJump();
-            }
-
             if (this._jumpBufferCounter > 0f
                 && !this._surroundingsCheck.IsGrounded()
                 && this._surroundingsCheck.WallDirection() != 0)
             {
                 this._spriteManager.OnJump();
 
-                this._rb.linearVelocity = new Vector2(-this._surroundingsCheck.WallDirection() * this.wallJumpForce.x, this.wallJumpForce.y);
+                this._rb.linearVelocity = new Vector2(
+                    -this._surroundingsCheck.WallDirection() * this.wallJumpForce.x,
+                    this.wallJumpForce.y);
                 this._isWallJumping = true;
                 this._jumpBufferCounter = 0f;
 
                 this.StartCoroutine(this.FinishWallJump());
+            }
+            else if (this._jumpBufferCounter > 0f && this._coyoteTimeCounter > 0f)
+            {
+                this._rb.linearVelocityY = this.jumpForce;
+                this._jumpBufferCounter = 0f;
+                this._coyoteTimeCounter = 0f;
+
+                this._spriteManager.OnJump();
             }
         }
 

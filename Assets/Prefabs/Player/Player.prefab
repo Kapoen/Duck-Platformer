@@ -392,7 +392,7 @@ MonoBehaviour:
   maxChargeTime: 0.4
   cooldownTime: 0.15
   boostFactor: 0.25
-  baseBoost: 1.5
+  baseBoost: 2
   airBoost: 19.5
   recoilDuration: 0.25
   soundWavePrefab: {fileID: 7536085914646462803, guid: 42dc5530d91b9c04bb13f868f1cf5e4e, type: 3}

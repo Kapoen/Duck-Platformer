@@ -237,9 +237,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Level.Platform
   type: 3
+  leverActivated: 0
   disableTime: 0.25
   fallDelay: 1
-  maxFallSpeed: 12.5
+  fallSpeed: 7.5
   pointA: {fileID: 6848829708777171949}
   pointB: {fileID: 2994343773153057875}
   moveSpeed: 2

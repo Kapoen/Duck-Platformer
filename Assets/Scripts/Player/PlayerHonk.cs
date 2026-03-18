@@ -17,7 +17,7 @@ namespace Player
         [SerializeField]
         private float boostFactor = 0.25f;
         [SerializeField]
-        private float baseBoost = 1.5f;
+        private float baseBoost = 2f;
         [SerializeField]
         private float airBoost = 19.5f;
         [SerializeField]
@@ -89,12 +89,17 @@ namespace Player
             GameObject wave = Instantiate(this.soundWavePrefab, this.transform.position, Quaternion.identity);
             wave.GetComponent<SoundWave>().Initialize(this.minRadius, radius, this._spriteManager.FacingDirection());
 
+            // Check if grounded, with a safety check for platforms.
             if (this._surroundingsCheck.IsGrounded())
             {
                 Vector2 movementSpeed = this._playerController.GetMovementSpeed();
+                float boostDirection = -1 * this._spriteManager.FacingDirection();
 
-                Vector2 recoil = new Vector2(-1 * this._spriteManager.FacingDirection() * ((Mathf.Abs(movementSpeed.x) * this.boostFactor) + this.baseBoost), 0);
-                this._playerController.ApplyRecoil(recoil, this.recoilDuration);
+                Vector2 recoil = new Vector2(
+                    boostDirection * ((Mathf.Abs(movementSpeed.x) * this.boostFactor) + this.baseBoost),
+                    movementSpeed.y);
+
+                this._playerController.ApplyRecoil(recoil, 0f);
             }
             else
             {

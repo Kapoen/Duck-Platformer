@@ -94,7 +94,12 @@ namespace Player
                     Vector2 dir = new Vector2(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
                     float dist = ring.Radius + 0.1f;
 
-                    RaycastHit2D hit = Physics2D.Raycast(this._origin, dir, dist, this.groundLayer | this.enemyLayer | this.objectLayer);
+                    RaycastHit2D hit = Physics2D.Raycast(
+                        this._origin,
+                        dir,
+                        dist,
+                        this.groundLayer | this.enemyLayer | this.objectLayer);
+
                     if (hit.collider)
                     {
                         ring.RayBlocked[j] = true;

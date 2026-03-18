@@ -16,6 +16,7 @@ namespace Level
         private readonly List<Enemy> _enemies = new List<Enemy>();
         private readonly List<Lever> _levers = new List<Lever>();
         private readonly List<Door> _doors = new List<Door>();
+        private CrackedWall _crackedWall;
 
         private PlayerSpriteManager _spriteManager;
 
@@ -95,6 +96,7 @@ namespace Level
             this._enemies.AddRange(FindObjectsByType<Enemy>(FindObjectsInactive.Include, FindObjectsSortMode.None));
             this._levers.AddRange(FindObjectsByType<Lever>(FindObjectsInactive.Include, FindObjectsSortMode.None));
             this._doors.AddRange(FindObjectsByType<Door>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+            this._crackedWall = FindAnyObjectByType<CrackedWall>(FindObjectsInactive.Include);
 
             this._spriteManager = this._player.GetComponent<PlayerSpriteManager>();
         }
@@ -122,6 +124,11 @@ namespace Level
             foreach (Door door in this._doors)
             {
                 door.ResetDoor();
+            }
+
+            if (this._crackedWall)
+            {
+                this._crackedWall.ResetWalls();
             }
 
             // TODO: Add cooldown for respawning
