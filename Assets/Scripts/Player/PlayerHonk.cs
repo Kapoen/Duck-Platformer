@@ -46,11 +46,6 @@ namespace Player
         /// </summary>
         public void OnHonkStart()
         {
-            if ((!this._surroundingsCheck.IsGrounded() && !this._canAirHonk) || this._cooldownCounter > 0f)
-            {
-                return;
-            }
-
             this._isCharging = true;
             this._chargeTime = 0f;
         }
@@ -62,6 +57,12 @@ namespace Player
         {
             if (!this._isCharging)
             {
+                return;
+            }
+
+            if ((!this._surroundingsCheck.IsGrounded() && !this._canAirHonk) || this._cooldownCounter > 0f)
+            {
+                this._isCharging = false;
                 return;
             }
 

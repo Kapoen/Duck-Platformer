@@ -72,6 +72,14 @@ namespace Player
         }
 
         /// <summary>
+        /// Delete all fired rings.
+        /// </summary>
+        public void DeleteRings()
+        {
+            GameObject.Destroy(this.gameObject);
+        }
+
+        /// <summary>
         /// For each ring and each ray, raycast to see if it hits something. If it does, handle the hit and block that ray.
         /// </summary>
         private void CacheRayDistances()

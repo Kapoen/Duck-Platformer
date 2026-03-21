@@ -106,6 +106,12 @@ namespace Level
         /// </summary>
         private void ResetLevel()
         {
+            SoundWave[] waves = FindObjectsByType<SoundWave>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            foreach (SoundWave soundWave in waves)
+            {
+                soundWave.DeleteRings();
+            }
+
             foreach (Platform platform in this._platforms)
             {
                 platform.ResetPlatform();
