@@ -34,7 +34,7 @@ namespace UI
             {
                 buttonImage.color = this.completedColor;
             }
-            else if (this.requiredLevels.All(level => data.CompletedLevels.Contains(level)))
+            else if (this.requiredLevels.Any(level => data.CompletedLevels.Contains(level)))
             {
                 buttonImage.color = this.normalColor;
             }

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using UnityEngine;
 
     /// <summary>
@@ -26,9 +27,9 @@
     public class Lever : MonoBehaviour
     {
         [SerializeField]
-        private GameObject linkedObject;
+        private List<GameObject> linkedObjects;
         [SerializeField]
-        private LeverType type;
+        private List<LeverType> objectTypes;
         [SerializeField]
         private float cooldownTime = 0.5f;
 
@@ -47,16 +48,22 @@
                 return;
             }
 
-            switch (this.type)
+            for (int i = 0; i < this.linkedObjects.Count; i++)
             {
-                case LeverType.Door:
-                    this.linkedObject.GetComponent<Door>().OpenDoor();
-                    break;
-                case LeverType.Platform:
-                    this.linkedObject.GetComponent<Platform>().SwitchMoving();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                GameObject currentObject = this.linkedObjects[i];
+                LeverType type = this.objectTypes[i];
+
+                switch (type)
+                {
+                    case LeverType.Door:
+                        currentObject.GetComponent<Door>().OpenDoor();
+                        break;
+                    case LeverType.Platform:
+                        currentObject.GetComponent<Platform>().SwitchMoving();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
 
             this._spriteRenderer.flipY = !this._spriteRenderer.flipY;
